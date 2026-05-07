@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MotoCrazy MC</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h2><strong>MotoCrazy</strong> <mark>MC</mark></h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="motos.html">Motos</a></li>
+                <li><a href="accesorios.html">Accesorios</a></li>
+            </ul>
+            <span onclick="toggleCarrito()">🛒</span>
+        </nav>
+    </header>
+
+    <section class="hero">
+    <section>
+    <h1>VIVE LA PASIÓN <br><span>SOBRE DOS RUEDAS</span></h1>
+    <p>Potencia, velocidad y estilo</p>
+    <button onclick="location.href='motos.html'">Ver motos</button>
+    </section>
+
+    <img src="hero.jpg" alt="Moto en acción">
+    </section>
+
+    <aside id="carrito">
+    <h2>Carrito</h2>
+    <ul id="lista"></ul>
+    <h3 id="total"></h3>
+    </aside>
+
+    <script src="app.js"></script>
+    </body>
+    </html>
