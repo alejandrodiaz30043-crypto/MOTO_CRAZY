@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Accesorios</title>
+<link rel="stylesheet" href="./CSS/styles.css">
+</head>
+
+<body>
+
+<header>
+<h2>MotoCrazy MC</h2>
+<nav>
+<a href="index.html">Inicio</a>
+<a href="motos.html">Motos</a>
+<a href="accesorios.html">Accesorios</a>
+<span onclick="toggleCarrito()">🛒</span>
+</nav>
+</header>
+
+<input type="text" id="buscador" placeholder="Buscar...">
+
+<h2 style="padding-left:20px;">Conductor</h2>
+
+<main>
+<article><img src="img/casco.jpg"><h3>Casco AGV</h3><p>$1.2M</p><button onclick="agregar('Casco',1200000,'img/casco.jpg')">Agregar</button></article>
+<article><img src="img/guantes.jpg"><h3>Guantes</h3><p>$250K</p><button onclick="agregar('Guantes',250000,'img/guantes.jpg')">Agregar</button></article>
+<article><img src="img/botas.jpg"><h3>Botas</h3><p>$600K</p><button onclick="agregar('Botas',600000,'img/botas.jpg')">Agregar</button></article>
+</main>
+
+<h2 style="padding-left:20px;">Moto</h2>
+
+<main>
+<article><img src="img/espejos.jpg"><h3>Espejos</h3><p>$180K</p><button onclick="agregar('Espejos',180000,'img/espejos.jpg')">Agregar</button></article>
+<article><img src="img/sliders.jpg"><h3>Sliders</h3><p>$220K</p><button onclick="agregar('Sliders',220000,'img/sliders.jpg')">Agregar</button></article>
+<article><img src="img/escape.jpg"><h3>Escape</h3><p>$1.8M</p><button onclick="agregar('Escape',1800000,'img/escape.jpg')">Agregar</button></article>
+</main>
+
+<aside id="carrito">
+<h2>Carrito</h2>
+<ul id="lista"></ul>
+<h3 id="total"></h3>
+</aside>
+
+<!-- <script src="app.js"></script> -->
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Motos</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header>
+<h2>MotoCrazy MC</h2>
+<nav>
+<a href="index.html">Inicio</a>
+<a href="motos.html">Motos</a>
+<a href="accesorios.html">Accesorios</a>
+<span onclick="toggleCarrito()">🛒</span>
+</nav>
+</header>
+
+<input type="text" id="buscador" placeholder="Buscar moto...">
+
+<main>
+
+<article><img src="img/r1.jpg"><h3>Yamaha R1</h3><p>$80M</p><button onclick="agregar('R1',80000000,'img/r1.jpg')">Agregar</button></article>
+
+<article><img src="img/ninja.jpg"><h3>Kawasaki Ninja ZX-10R</h3><p>$75M</p><button onclick="agregar('Ninja',75000000,'img/ninja.jpg')">Agregar</button></article>
+
+<article><img src="img/bmw.jpg"><h3>BMW S1000RR</h3><p>$95M</p><button onclick="agregar('BMW',95000000,'img/bmw.jpg')">Agregar</button></article>
+
+<article><img src="img/ducati.jpg"><h3>Ducati Panigale V4</h3><p>$110M</p><button onclick="agregar('Ducati',110000000,'img/ducati.jpg')">Agregar</button></article>
+
+<article><img src="img/honda.jpg"><h3>Honda CBR1000RR</h3><p>$82M</p><button onclick="agregar('Honda',82000000,'img/honda.jpg')">Agregar</button></article>
+
+<article><img src="img/suzuki.jpg"><h3>Suzuki GSX-R1000</h3><p>$70M</p><button onclick="agregar('Suzuki',70000000,'img/suzuki.jpg')">Agregar</button></article>
+
+</main>
+
+<aside id="carrito">
+<h2>Carrito</h2>
+<ul id="lista"></ul>
+<h3 id="total"></h3>
+</aside>
+
+<script src="app.js"></script>
+</body>
+</html>
