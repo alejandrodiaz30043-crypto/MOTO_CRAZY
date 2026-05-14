@@ -75,9 +75,13 @@
             cartCleared: "Carrito vaciado.",
             checkoutMessage: "Compra simulada lista. Total guardado en el carrito.",
             catalogLocal: "Catalogo local listo.",
-            catalogSupabase: "Accesorios consultados desde Supabase.",
+            catalogSupabase: "Catalogo consultado desde Supabase.",
+            catalogSupabaseMotos: "Motos consultadas desde Supabase.",
+            catalogSupabaseAccessories: "Accesorios consultados desde Supabase.",
             catalogSupabaseEmpty: "Supabase esta conectado, pero aun no tiene productos. Se muestran datos locales.",
             catalogSupabaseError: "No se pudo leer Supabase. Se muestran datos locales.",
+            priceUnavailable: "Consultar",
+            fromPrice: "Desde",
             footerText: "MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita."
         },
         en: {
@@ -143,9 +147,13 @@
             cartCleared: "Cart cleared.",
             checkoutMessage: "Demo checkout ready. Total saved in the cart.",
             catalogLocal: "Local catalog ready.",
-            catalogSupabase: "Accessories loaded from Supabase.",
+            catalogSupabase: "Catalog loaded from Supabase.",
+            catalogSupabaseMotos: "Motorcycles loaded from Supabase.",
+            catalogSupabaseAccessories: "Accessories loaded from Supabase.",
             catalogSupabaseEmpty: "Supabase is connected, but has no products yet. Local data is shown.",
             catalogSupabaseError: "Supabase could not be read. Local data is shown.",
+            priceUnavailable: "Ask price",
+            fromPrice: "From",
             footerText: "MotoCrazy MC - Web project with HTML, CSS, JavaScript, Supabase and a free API."
         }
     };
@@ -415,6 +423,10 @@
         activeCategory: "all",
         search: "",
         databaseStatus: "checking",
+        sources: {
+            motos: "local",
+            accesorios: "local"
+        },
         accessoriesSource: "local"
     };
 
@@ -504,7 +516,7 @@
 
         document.addEventListener("input", function (event) {
             if (event.target.id === "searchInput") {
-                state.search = event.target.value.trim().toLowerCase();
+                state.search = normalizeText(event.target.value);
                 renderProductCatalog(getCurrentCatalogType());
             }
         });
@@ -611,7 +623,7 @@
         const buttons = ["all"].concat(categories).map(function (category) {
             return `
                 <button type="button" data-category="${escapeAttribute(category)}" class="${category === state.activeCategory ? "is-active" : ""}">
-                    ${escapeHTML(categoryLabel(category))}
+                    ${escapeHTML(categoryLabel(category, type))}
                 </button>
             `;
         });
@@ -637,12 +649,14 @@
         const query = state.search;
         return state.catalogs[type].filter(function (product) {
             const matchesCategory = state.activeCategory === "all" || product.category === state.activeCategory;
-            const searchable = [
+            const searchable = normalizeText([
                 product.name,
                 product.brand,
-                categoryLabel(product.category),
-                descriptionFor(product)
-            ].join(" ").toLowerCase();
+                product.categoryName,
+                categoryLabel(product.category, type),
+                descriptionFor(product),
+                product.price
+            ].join(" "));
 
             return matchesCategory && (!query || searchable.includes(query));
         });
@@ -652,19 +666,19 @@
         return `
             <article class="product-card" data-product="${escapeAttribute(product.id)}">
                 <div class="product-card__media">
-                    <img src="${escapeAttribute(product.image || FALLBACK_IMAGE)}" alt="${escapeAttribute(product.name)}" loading="lazy">
+                    <img src="${escapeAttribute(product.image || FALLBACK_IMAGE)}" alt="${escapeAttribute(product.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                 </div>
                 <div class="product-card__body">
                     <div class="product-card__meta">
                         <span class="badge">${escapeHTML(product.brand || "MotoCrazy")}</span>
-                        <span class="badge">${escapeHTML(categoryLabel(product.category))}</span>
+                        <span class="badge">${escapeHTML(categoryLabel(product.category, product.type))}</span>
                     </div>
                     <h3>${escapeHTML(product.name)}</h3>
                     <p class="product-card__description">${escapeHTML(descriptionFor(product))}</p>
                     <p class="badge">${escapeHTML(t("stock"))}: ${Number(product.stock || 0)}</p>
                 </div>
                 <div class="product-card__footer">
-                    <span class="price">${formatMoney(product.price)}</span>
+                    <span class="price">${formatPrice(product)}</span>
                     <button class="product-card__button" type="button" data-action="add-to-cart" data-product-type="${escapeAttribute(product.type)}" data-product-id="${escapeAttribute(product.id)}">
                         ${escapeHTML(t("addToCart"))}
                     </button>
@@ -823,64 +837,137 @@
         const config = window.MOTO_CRAZY_SUPABASE;
         if (!config || !config.url || !config.anonKey) {
             state.databaseStatus = "localOnly";
+            state.sources.motos = "local";
+            state.sources.accesorios = "local";
+            state.accessoriesSource = "local";
             updateStatusText();
             return;
         }
 
+        const baseUrl = config.url.replace(/\/$/, "");
+        const headers = {
+            apikey: config.anonKey,
+            Authorization: `Bearer ${config.anonKey}`,
+            Accept: "application/json"
+        };
+
+        const [motosResult, accesoriosResult] = await Promise.all([
+            fetchSupabaseRows(
+                `${baseUrl}/rest/v1/modelos?select=id_modelo,nombre,id_marca,id_categoria,imagen_url,marcas(nombre),categorias_motos(nombre,descripcion)&order=id_modelo.asc`,
+                headers,
+                "modelos"
+            ),
+            fetchSupabaseRows(
+                `${baseUrl}/rest/v1/productos_accesorios?select=id_producto,nombre,descripcion,imagen_url,activo,categorias_accesorios(nombre),variantes_accesorios(precio,stock,activo)&order=id_producto.asc`,
+                headers,
+                "productos_accesorios"
+            )
+        ]);
+
+        if (motosResult.ok && motosResult.rows.length) {
+            state.catalogs.motos = motosResult.rows.map(mapSupabaseMoto);
+            state.sources.motos = "supabase";
+        } else if (motosResult.ok) {
+            state.sources.motos = "local-empty";
+        } else {
+            state.sources.motos = "local-error";
+        }
+
+        if (accesoriosResult.ok && accesoriosResult.rows.length) {
+            state.catalogs.accesorios = accesoriosResult.rows
+                .filter(function (row) {
+                    return row.activo !== false;
+                })
+                .map(mapSupabaseAccessory);
+            state.sources.accesorios = state.catalogs.accesorios.length ? "supabase" : "local-empty";
+        } else if (accesoriosResult.ok) {
+            state.sources.accesorios = "local-empty";
+        } else {
+            state.sources.accesorios = "local-error";
+        }
+
+        state.accessoriesSource = state.sources.accesorios;
+        state.databaseStatus = databaseStatusFromSources();
+        updateStatusText();
+        renderPage();
+    }
+
+    async function fetchSupabaseRows(url, headers, tableName) {
         try {
-            const table = config.tables && config.tables.accessories ? config.tables.accessories : "productos_accesorios";
-            const endpoint = `${config.url.replace(/\/$/, "")}/rest/v1/${table}?select=id_producto,nombre,descripcion,imagen_url,categorias_accesorios(nombre),variantes_accesorios(precio,stock)&order=id_producto.asc`;
-            const response = await fetch(endpoint, {
-                headers: {
-                    apikey: config.anonKey,
-                    Authorization: `Bearer ${config.anonKey}`
-                }
-            });
+            const response = await fetch(url, { headers });
 
             if (!response.ok) {
-                throw new Error(`Supabase ${response.status}`);
+                throw new Error(`${tableName}: ${response.status}`);
             }
 
             const rows = await response.json();
-
-            if (Array.isArray(rows) && rows.length) {
-                state.catalogs.accesorios = rows.map(mapSupabaseAccessory);
-                state.databaseStatus = "supabaseData";
-                state.accessoriesSource = "supabase";
-            } else {
-                state.databaseStatus = "supabaseEmpty";
-                state.accessoriesSource = "local-empty";
-            }
+            return {
+                ok: true,
+                rows: Array.isArray(rows) ? rows : []
+            };
         } catch (error) {
-            console.warn("No se pudo leer Supabase:", error);
-            state.databaseStatus = "supabaseError";
-            state.accessoriesSource = "local-error";
-        }
-
-        updateStatusText();
-
-        if (page === "inicio") {
-            renderFeaturedProducts();
-        }
-
-        if (page === "accesorios") {
-            renderFilters("accesorios");
-            renderProductCatalog("accesorios");
+            console.error("Supabase error:", error);
+            return {
+                ok: false,
+                rows: []
+            };
         }
     }
 
-    function mapSupabaseAccessory(row) {
-        const variant = Array.isArray(row.variantes_accesorios) ? row.variantes_accesorios[0] : null;
-        const rawCategory = row.categorias_accesorios && row.categorias_accesorios.nombre ? row.categorias_accesorios.nombre : "Moto";
+    function databaseStatusFromSources() {
+        const sources = Object.values(state.sources);
+        if (sources.includes("supabase")) return "supabaseData";
+        if (sources.includes("local-error")) return "supabaseError";
+        if (sources.includes("local-empty")) return "supabaseEmpty";
+        return "localOnly";
+    }
+
+    function mapSupabaseMoto(row) {
+        const rawCategory = nestedName(row.categorias_motos) || "Moto";
+        const localReference = findLocalReference("motos", row.nombre);
 
         return {
-            id: `supabase-${row.id_producto}`,
+            id: `moto-${row.id_modelo || slugify(row.nombre || "moto")}`,
+            type: "motos",
+            name: row.nombre || "Moto",
+            brand: nestedName(row.marcas) || (localReference && localReference.brand) || "MotoCrazy",
+            category: normalizeCategory(rawCategory),
+            categoryName: rawCategory,
+            price: Number(row.precio || row.price || (localReference && localReference.price) || 0),
+            stock: Number(row.stock || 1),
+            image: row.imagen_url || (localReference && localReference.image) || FALLBACK_IMAGE,
+            description: {
+                es: row.descripcion || `Modelo ${rawCategory} cargado desde Supabase.`,
+                en: row.descripcion || `${rawCategory} model loaded from Supabase.`
+            }
+        };
+    }
+
+    function mapSupabaseAccessory(row) {
+        const variants = Array.isArray(row.variantes_accesorios) ? row.variantes_accesorios.filter(function (variant) {
+            return variant.activo !== false;
+        }) : [];
+
+        const prices = variants.map(function (variant) {
+            return Number(variant.precio || 0);
+        }).filter(function (price) {
+            return price > 0;
+        });
+
+        const rawCategory = nestedName(row.categorias_accesorios) || "Accesorio";
+
+        return {
+            id: `acc-${row.id_producto || slugify(row.nombre || "accesorio")}`,
             type: "accesorios",
             name: row.nombre || "Accesorio",
             brand: "MotoCrazy",
-            category: normalizeCategory(rawCategory),
-            price: Number(variant && variant.precio ? variant.precio : 0),
-            stock: Number(variant && variant.stock ? variant.stock : 0),
+            category: slugify(rawCategory) || "accesorio",
+            categoryName: rawCategory,
+            price: prices.length ? Math.min.apply(null, prices) : Number(row.precio || 0),
+            pricePrefix: prices.length > 1,
+            stock: variants.reduce(function (sum, variant) {
+                return sum + Number(variant.stock || 0);
+            }, Number(row.stock || 0)),
             image: row.imagen_url || FALLBACK_IMAGE,
             description: {
                 es: row.descripcion || "Producto sincronizado desde Supabase.",
@@ -938,17 +1025,14 @@
         const catalogStatus = document.getElementById("catalogStatus");
         if (!catalogStatus) return;
 
-        if (page === "motos") {
-            catalogStatus.textContent = t("catalogLocal");
-            return;
-        }
-
-        const key = {
-            supabase: "catalogSupabase",
+        const source = state.sources[page] || state.accessoriesSource || "local";
+        const sourceKeys = {
+            supabase: page === "motos" ? "catalogSupabaseMotos" : "catalogSupabaseAccessories",
             "local-empty": "catalogSupabaseEmpty",
             "local-error": "catalogSupabaseError",
             local: "catalogLocal"
-        }[state.accessoriesSource] || "catalogLocal";
+        };
+        const key = sourceKeys[source] || "catalogLocal";
         catalogStatus.textContent = t(key);
     }
 
@@ -965,8 +1049,17 @@
         return product.description[state.lang] || product.description.es || product.description.en || "";
     }
 
-    function categoryLabel(category) {
-        return t(categoryKeys[category] || categoryKeys.motorcycle);
+    function categoryLabel(category, type) {
+        if (categoryKeys[category]) {
+            return t(categoryKeys[category]);
+        }
+
+        const product = findProductByCategory(type, category);
+        if (product && product.categoryName) {
+            return product.categoryName;
+        }
+
+        return titleFromSlug(category);
     }
 
     function normalizeCategory(value) {
@@ -975,7 +1068,55 @@
         if (normalized.includes("naked")) return "naked";
         if (normalized.includes("sport") || normalized.includes("deport")) return "sport";
         if (normalized.includes("tour")) return "touring";
-        return "motorcycle";
+        return slugify(value) || "motorcycle";
+    }
+
+    function findProductByCategory(type, category) {
+        const products = state.catalogs[type] || [];
+        return products.find(function (product) {
+            return product.category === category;
+        });
+    }
+
+    function findLocalReference(type, name) {
+        const normalizedName = normalizeText(name);
+        return (localProducts[type] || []).find(function (product) {
+            return normalizeText(product.name) === normalizedName;
+        });
+    }
+
+    function nestedName(value) {
+        if (!value) return "";
+        if (typeof value === "string") return value;
+        return value.nombre || value.name || "";
+    }
+
+    function titleFromSlug(value) {
+        return String(value || "")
+            .split("-")
+            .filter(Boolean)
+            .map(function (part) {
+                return part.charAt(0).toUpperCase() + part.slice(1);
+            })
+            .join(" ") || t("categoryMotorcycle");
+    }
+
+    function normalizeText(value) {
+        return String(value || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+    }
+
+    function formatPrice(product) {
+        const price = Number(product && product.price ? product.price : 0);
+        if (price <= 0) {
+            return t("priceUnavailable");
+        }
+
+        const money = formatMoney(price);
+        return product.pricePrefix ? `${t("fromPrice")} ${money}` : money;
     }
 
     function formatMoney(value) {
