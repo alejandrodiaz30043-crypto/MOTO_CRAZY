@@ -1,62 +1,99 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motocrazy MC</title>
-    <link rel="stylesheet" href="./CSS/styles_index_principal.css">
+    <meta name="description" content="MotoCrazy MC: tienda web de motos y accesorios con carrito de compras.">
+    <title>MotoCrazy MC | Inicio</title>
+    <link rel="stylesheet" href="./CSS/styles.css">
 </head>
-<body>
+<body data-page="inicio">
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="MotoCrazy MC">
+            <span class="brand__name">MotoCrazy</span>
+            <span class="brand__tag">MC</span>
+        </a>
 
-    <header>
-        <h2><strong>MotoCrazy</strong> <mark>MC</mark></h2>
-        <nav>
-            <ul>
-                <li><a href="inicio.html">Inicio</a></li>
-                <li><a href="motos.html">Motos</a></li>
-                <li><a href="accesorios.html">Accesorios</a></li>
-            </ul>
+        <nav class="site-nav" aria-label="Navegacion principal">
+            <a href="index.html" data-nav="inicio" data-i18n="navHome">Inicio</a>
+            <a href="motos.html" data-nav="motos" data-i18n="navMotos">Motos</a>
+            <a href="accesorios.html" data-nav="accesorios" data-i18n="navAccessories">Accesorios</a>
         </nav>
+
+        <div class="header-actions">
+            <button class="utility-button" type="button" data-action="toggle-theme" aria-label="Cambiar tema">Tema</button>
+            <button class="utility-button" type="button" data-action="toggle-lang" aria-label="Cambiar idioma">EN</button>
+            <button class="cart-button" type="button" data-action="toggle-cart" aria-label="Abrir carrito">
+                <span data-i18n="cartButton">Carrito</span>
+                <span id="cartCount" class="cart-count">0</span>
+            </button>
+        </div>
     </header>
 
     <main>
         <section class="hero">
-            <article>
-                <h1>VIVE LA PASIÓN <span>SOBRE DOS RUEDAS</span></h1>
-                <p>Rendimiento, estilo y seguridad en cada curva.</p>
-                <button onclick="location.href='motos.html'">VER MOTOS</button>
-                <button onclick="location.href='accesorios.html'">VER ACCESORIOS</button>
-
-            </article>
+            <div class="hero__content">
+                <p class="eyebrow" data-i18n="heroEyebrow">Tienda para ruta urbana y aventura</p>
+                <h1 data-i18n="heroTitle">MotoCrazy MC</h1>
+                <p data-i18n="heroText">Encuentra motos, accesorios y datos utiles para salir a rodar con mas seguridad.</p>
+                <div class="hero__actions">
+                    <a class="button button--primary" href="motos.html" data-i18n="seeMotos">Ver motos</a>
+                    <a class="button button--secondary" href="accesorios.html" data-i18n="seeAccessories">Ver accesorios</a>
+                </div>
+            </div>
         </section>
 
-        <section class="catalog">
-            <header>
-                <h2>MOTOS DESTACADAS</h2>
-            </header>
-
-            <section class="grid">
-                <article class="card">
-                    <figure><img src="https://via.placeholder.com/200" alt="Yamaha R1M"></figure>
-                    <h3>Honda CBR 1000RR</h3>
-                    <data value="95000000">$95.000.000</data>
-                    <footer><button>Agregar</button></footer>
+        <section class="section section--tight">
+            <div class="metric-strip" aria-label="Resumen de MotoCrazy MC">
+                <article class="metric">
+                    <strong>12+</strong>
+                    <span data-i18n="metricCatalog">Referencias en catalogo</span>
                 </article>
-
-                <article class="card">
-                    <figure><img src="https://via.placeholder.com/200" alt="BMW S1000RR"></figure>
-                    <h3>BMW S1000RR</h3>
-                    <data value="95000000">$95.000.000</data>
-                    <footer><button>Agregar</button></footer>
+                <article class="metric">
+                    <strong>2</strong>
+                    <span data-i18n="metricLanguages">Idiomas disponibles</span>
                 </article>
-                
-                </section>
+                <article class="metric">
+                    <strong>24/7</strong>
+                    <span data-i18n="metricCart">Carrito guardado</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <p class="eyebrow" data-i18n="featuredEyebrow">Seleccion destacada</p>
+                <h2 data-i18n="featuredTitle">Productos listos para agregar</h2>
+            </div>
+            <div id="featuredGrid" class="product-grid"></div>
+        </section>
+
+        <section class="section split-section">
+            <article class="ride-panel">
+                <p class="eyebrow" data-i18n="weatherEyebrow">API gratuita</p>
+                <h2 data-i18n="weatherTitle">Clima para rodar en Bogota</h2>
+                <div id="weatherWidget" class="weather-widget" aria-live="polite">
+                    <p data-i18n="weatherLoading">Consultando clima actual...</p>
+                </div>
+            </article>
+
+            <article class="ride-panel ride-panel--accent">
+                <p class="eyebrow" data-i18n="databaseEyebrow">Base de datos</p>
+                <h2 data-i18n="databaseTitle">Catalogo sincronizable</h2>
+                <p id="databaseStatus" data-i18n="databaseChecking">Revisando conexion con Supabase...</p>
+            </article>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Motocrazy MC - Pasión por la velocidad</p>
+    <footer class="site-footer">
+        <p data-i18n="footerText">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
+        <p class="footer-links">
+            <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
+            <span>Supabase</span>
+        </p>
     </footer>
 
+    <script src="./base/supabase.js"></script>
+    <script src="./base/app.js"></script>
 </body>
 </html>

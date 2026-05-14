@@ -1,47 +1,63 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<title>Accesorios</title>
-<link rel="stylesheet" href="./CSS/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catalogo de accesorios para motociclistas MotoCrazy MC.">
+    <title>MotoCrazy MC | Accesorios</title>
+    <link rel="stylesheet" href="./CSS/styles.css">
 </head>
+<body data-page="accesorios">
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="MotoCrazy MC">
+            <span class="brand__name">MotoCrazy</span>
+            <span class="brand__tag">MC</span>
+        </a>
 
-<body>
+        <nav class="site-nav" aria-label="Navegacion principal">
+            <a href="index.html" data-nav="inicio" data-i18n="navHome">Inicio</a>
+            <a href="motos.html" data-nav="motos" data-i18n="navMotos">Motos</a>
+            <a href="accesorios.html" data-nav="accesorios" data-i18n="navAccessories">Accesorios</a>
+        </nav>
 
-<header>
-<h2>MotoCrazy MC</h2>
-<nav>
-<a href="index.html">Inicio</a>
-<a href="motos.html">Motos</a>
-<a href="accesorios.html">Accesorios</a>
-<span onclick="toggleCarrito()">🛒</span>
-</nav>
-</header>
+        <div class="header-actions">
+            <button class="utility-button" type="button" data-action="toggle-theme" aria-label="Cambiar tema">Tema</button>
+            <button class="utility-button" type="button" data-action="toggle-lang" aria-label="Cambiar idioma">EN</button>
+            <button class="cart-button" type="button" data-action="toggle-cart" aria-label="Abrir carrito">
+                <span data-i18n="cartButton">Carrito</span>
+                <span id="cartCount" class="cart-count">0</span>
+            </button>
+        </div>
+    </header>
 
-<input type="text" id="buscador" placeholder="Buscar...">
+    <main>
+        <section class="page-hero page-hero--compact">
+            <div>
+                <p class="eyebrow" data-i18n="accessoriesEyebrow">Equipamiento</p>
+                <h1 data-i18n="accessoriesTitle">Accesorios para piloto y moto</h1>
+                <p data-i18n="accessoriesIntro">Completa tu ruta con proteccion, comodidad y repuestos esenciales.</p>
+            </div>
+        </section>
 
-<h2 style="padding-left:20px;">Conductor</h2>
+        <section class="section catalog-toolbar" aria-label="Filtros del catalogo">
+            <label class="search-box">
+                <span data-i18n="searchLabel">Buscar</span>
+                <input id="searchInput" type="search" data-i18n-placeholder="searchAccessories" placeholder="Buscar accesorio...">
+            </label>
+            <div id="categoryFilters" class="filter-row" aria-label="Categorias"></div>
+        </section>
 
-<main>
-<article><img src="img/casco.jpg"><h3>Casco AGV</h3><p>$1.2M</p><button onclick="agregar('Casco',1200000,'img/casco.jpg')">Agregar</button></article>
-<article><img src="img/guantes.jpg"><h3>Guantes</h3><p>$250K</p><button onclick="agregar('Guantes',250000,'img/guantes.jpg')">Agregar</button></article>
-<article><img src="img/botas.jpg"><h3>Botas</h3><p>$600K</p><button onclick="agregar('Botas',600000,'img/botas.jpg')">Agregar</button></article>
-</main>
+        <section class="section">
+            <p id="catalogStatus" class="inline-status" aria-live="polite"></p>
+            <div id="productGrid" class="product-grid catalog-grid"></div>
+        </section>
+    </main>
 
-<h2 style="padding-left:20px;">Moto</h2>
+    <footer class="site-footer">
+        <p data-i18n="footerText">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
+    </footer>
 
-<main>
-<article><img src="img/espejos.jpg"><h3>Espejos</h3><p>$180K</p><button onclick="agregar('Espejos',180000,'img/espejos.jpg')">Agregar</button></article>
-<article><img src="img/sliders.jpg"><h3>Sliders</h3><p>$220K</p><button onclick="agregar('Sliders',220000,'img/sliders.jpg')">Agregar</button></article>
-<article><img src="img/escape.jpg"><h3>Escape</h3><p>$1.8M</p><button onclick="agregar('Escape',1800000,'img/escape.jpg')">Agregar</button></article>
-</main>
-
-<aside id="carrito">
-<h2>Carrito</h2>
-<ul id="lista"></ul>
-<h3 id="total"></h3>
-</aside>
-
-<!-- <script src="app.js"></script> -->
+    <script src="./base/supabase.js"></script>
+    <script src="./base/app.js"></script>
 </body>
 </html>
