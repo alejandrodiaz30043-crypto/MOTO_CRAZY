@@ -5,7 +5,8 @@
         cart: "motocrazy_cart_v2",
         oldCart: "carrito",
         theme: "motocrazy_theme",
-        lang: "motocrazy_lang"
+        lang: "motocrazy_lang",
+        auth: "motocrazy_auth_session"
     };
 
     const FALLBACK_IMAGE = "CSS/img_1.jpg";
@@ -427,18 +428,25 @@
             motos: "local",
             accesorios: "local"
         },
-        accessoriesSource: "local"
+        accessoriesSource: "local",
+        authSession: loadAuthSession(),
+        authUser: null
     };
 
     document.addEventListener("DOMContentLoaded", init);
 
     function init() {
+        captureAuthRedirect();
+        createUserMenus();
         createCartDrawer();
+        createAuthModal();
         applyTheme();
         applyLanguage();
         bindEvents();
         renderPage();
         renderCart();
+        updateAuthUI();
+        verifyStoredSession();
         loadWeather();
         loadSupabaseAccessories();
     }
@@ -479,6 +487,36 @@
                 return;
             }
 
+            if (action === "open-auth-register") {
+                openAuthModal("register");
+                return;
+            }
+
+            if (action === "open-auth-login") {
+                openAuthModal("login");
+                return;
+            }
+
+            if (action === "open-auth-recover") {
+                openAuthModal("recover");
+                return;
+            }
+
+            if (action === "close-auth-modal") {
+                closeAuthModal();
+                return;
+            }
+
+            if (action === "auth-logout") {
+                logoutUser();
+                return;
+            }
+
+            if (action === "auth-oauth") {
+                startOAuth(actionElement.dataset.provider);
+                return;
+            }
+
             if (action === "close-cart") {
                 toggleCart(false);
                 return;
@@ -514,6 +552,13 @@
             }
         });
 
+        document.addEventListener("submit", function (event) {
+            if (event.target && event.target.id === "authForm") {
+                event.preventDefault();
+                submitAuthForm(event.target);
+            }
+        });
+
         document.addEventListener("input", function (event) {
             if (event.target.id === "searchInput") {
                 state.search = normalizeText(event.target.value);
@@ -524,6 +569,7 @@
         document.addEventListener("keydown", function (event) {
             if (event.key === "Escape") {
                 toggleCart(false);
+                closeAuthModal();
             }
         });
 
@@ -575,6 +621,347 @@
         document.querySelectorAll("[data-nav]").forEach(function (link) {
             link.classList.toggle("is-active", link.dataset.nav === page);
         });
+    }
+
+    function createUserMenus() {
+        document.querySelectorAll(".user-menu-container").forEach(function (menu) {
+            menu.remove();
+        });
+
+        document.querySelectorAll(".header-actions").forEach(function (actions) {
+            actions.insertAdjacentHTML("afterbegin", `
+                <div class="user-menu-container">
+                    <button class="user-icon-btn" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </button>
+                    <div class="user-dropdown" role="menu">
+                        <p class="dropdown-title" data-auth-label>Escoja una opcion para entrar</p>
+                        <div class="auth-guest-actions">
+                            <button class="btn-primary" type="button" data-action="open-auth-register">REGISTRARME COMO USUARIO</button>
+                            <button class="btn-primary" type="button" data-action="open-auth-login">INICIAR SESION</button>
+                            <button class="btn-link" type="button" data-action="open-auth-recover">Recuperar contrasena</button>
+                            <hr>
+                            <button class="btn-social" type="button" data-action="auth-oauth" data-provider="google"><span class="social-icon social-icon--google">G</span> ENTRAR CON GOOGLE</button>
+                            <button class="btn-social" type="button" data-action="auth-oauth" data-provider="facebook"><span class="social-icon social-icon--facebook">f</span> ENTRAR CON FACEBOOK</button>
+                            <button class="btn-social" type="button" data-action="auth-oauth" data-provider="apple"><span class="social-icon social-icon--apple">A</span> ENTRAR CON APPLE</button>
+                        </div>
+                        <div class="auth-user-actions" hidden>
+                            <p class="auth-user-email" data-auth-email></p>
+                            <button class="btn-secondary" type="button" data-action="auth-logout">CERRAR SESION</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    function createAuthModal() {
+        if (document.getElementById("authModal")) return;
+
+        document.body.insertAdjacentHTML("beforeend", `
+            <div id="authModal" class="auth-modal" aria-hidden="true">
+                <div class="auth-modal__backdrop" data-action="close-auth-modal"></div>
+                <section class="auth-modal__panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+                    <button class="icon-button auth-modal__close" type="button" data-action="close-auth-modal" aria-label="Cerrar">X</button>
+                    <h2 id="authTitle">Crear cuenta</h2>
+                    <p id="authHint" class="auth-modal__hint">Usa tu correo y una contrasena segura.</p>
+                    <form id="authForm" class="auth-form" data-auth-mode="register">
+                        <label>
+                            <span>Correo electronico</span>
+                            <input id="authEmail" type="email" name="email" autocomplete="email" required>
+                        </label>
+                        <label id="authPasswordGroup">
+                            <span>Contrasena</span>
+                            <input id="authPassword" type="password" name="password" autocomplete="current-password" minlength="6">
+                        </label>
+                        <button id="authSubmit" class="btn-primary" type="submit">Registrarme</button>
+                        <p id="authMessage" class="auth-message" aria-live="polite"></p>
+                    </form>
+                </section>
+            </div>
+        `);
+    }
+
+    function openAuthModal(mode) {
+        const modal = document.getElementById("authModal");
+        const form = document.getElementById("authForm");
+        const title = document.getElementById("authTitle");
+        const hint = document.getElementById("authHint");
+        const submit = document.getElementById("authSubmit");
+        const passwordGroup = document.getElementById("authPasswordGroup");
+        const password = document.getElementById("authPassword");
+        const message = document.getElementById("authMessage");
+        if (!modal || !form || !title || !hint || !submit || !passwordGroup || !password) return;
+
+        const copy = {
+            register: {
+                title: "Crear cuenta",
+                hint: "Registra tu usuario con Supabase Auth.",
+                submit: "REGISTRARME"
+            },
+            login: {
+                title: "Iniciar sesion",
+                hint: "Entra con el correo y la contrasena que registraste.",
+                submit: "INICIAR SESION"
+            },
+            recover: {
+                title: "Recuperar contrasena",
+                hint: "Te enviaremos un enlace de recuperacion al correo.",
+                submit: "ENVIAR ENLACE"
+            }
+        }[mode] || {};
+
+        form.dataset.authMode = mode;
+        title.textContent = copy.title;
+        hint.textContent = copy.hint;
+        submit.textContent = copy.submit;
+        passwordGroup.hidden = mode === "recover";
+        password.required = mode !== "recover";
+        if (message) message.textContent = "";
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.getElementById("authEmail").focus();
+    }
+
+    function closeAuthModal() {
+        const modal = document.getElementById("authModal");
+        if (!modal) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+    }
+
+    async function submitAuthForm(form) {
+        const mode = form.dataset.authMode || "login";
+        const email = String(form.email.value || "").trim();
+        const password = String(form.password ? form.password.value : "");
+        const submit = document.getElementById("authSubmit");
+        const message = document.getElementById("authMessage");
+        const originalText = submit ? submit.textContent : "";
+
+        if (!email) return;
+        if (mode !== "recover" && password.length < 6) {
+            setAuthMessage("La contrasena debe tener al menos 6 caracteres.", true);
+            return;
+        }
+
+        if (submit) {
+            submit.disabled = true;
+            submit.textContent = "PROCESANDO...";
+        }
+        setAuthMessage("");
+
+        try {
+            if (mode === "register") {
+                const data = await requestSupabaseAuth("/auth/v1/signup", {
+                    email,
+                    password
+                });
+
+                if (data.session || data.access_token) {
+                    saveAuthSession(data.session || data);
+                    await verifyStoredSession();
+                    closeAuthModal();
+                    showToast("Registro completado.");
+                } else {
+                    setAuthMessage("Registro creado. Revisa tu correo si Supabase pide confirmacion.", false);
+                }
+                return;
+            }
+
+            if (mode === "login") {
+                const data = await requestSupabaseAuth("/auth/v1/token?grant_type=password", {
+                    email,
+                    password
+                });
+                saveAuthSession(data);
+                await verifyStoredSession();
+                closeAuthModal();
+                showToast("Sesion iniciada.");
+                return;
+            }
+
+            await requestSupabaseAuth("/auth/v1/recover", {
+                email,
+                redirect_to: window.location.href.split("#")[0]
+            });
+            setAuthMessage("Enlace de recuperacion enviado si el correo existe.", false);
+        } catch (error) {
+            setAuthMessage(error.message || "No fue posible completar la autenticacion.", true);
+        } finally {
+            if (submit) {
+                submit.disabled = false;
+                submit.textContent = originalText;
+            }
+            if (message && message.textContent) message.hidden = false;
+        }
+    }
+
+    async function logoutUser() {
+        try {
+            if (state.authSession && state.authSession.access_token) {
+                await requestSupabaseAuth("/auth/v1/logout", {}, {
+                    token: state.authSession.access_token
+                });
+            }
+        } catch (error) {
+            console.warn("No se pudo cerrar sesion en Supabase:", error);
+        }
+
+        clearAuthSession();
+        updateAuthUI();
+        showToast("Sesion cerrada.");
+    }
+
+    function startOAuth(provider) {
+        const config = getSupabaseConfig();
+        if (!config || !provider) {
+            showToast("Configura Supabase para usar autenticacion.");
+            return;
+        }
+
+        const redirect = encodeURIComponent(window.location.href.split("#")[0]);
+        window.location.href = `${config.baseUrl}/auth/v1/authorize?provider=${encodeURIComponent(provider)}&redirect_to=${redirect}`;
+    }
+
+    async function verifyStoredSession() {
+        if (!state.authSession || !state.authSession.access_token) {
+            updateAuthUI();
+            return;
+        }
+
+        if (state.authSession.expires_at && Date.now() > Number(state.authSession.expires_at) * 1000) {
+            clearAuthSession();
+            updateAuthUI();
+            return;
+        }
+
+        try {
+            const user = await requestSupabaseAuth("/auth/v1/user", null, {
+                method: "GET",
+                token: state.authSession.access_token
+            });
+            state.authUser = user;
+        } catch (error) {
+            clearAuthSession();
+        }
+
+        updateAuthUI();
+    }
+
+    function updateAuthUI() {
+        const email = state.authUser && state.authUser.email
+            ? state.authUser.email
+            : state.authSession && state.authSession.user && state.authSession.user.email
+                ? state.authSession.user.email
+                : "";
+
+        document.querySelectorAll(".user-dropdown").forEach(function (dropdown) {
+            const label = dropdown.querySelector("[data-auth-label]");
+            const guestActions = dropdown.querySelector(".auth-guest-actions");
+            const userActions = dropdown.querySelector(".auth-user-actions");
+            const emailNode = dropdown.querySelector("[data-auth-email]");
+            const isAuthenticated = Boolean(state.authSession && state.authSession.access_token);
+
+            if (label) label.textContent = isAuthenticated ? "Sesion activa" : "Escoja una opcion para entrar";
+            if (guestActions) guestActions.hidden = isAuthenticated;
+            if (userActions) userActions.hidden = !isAuthenticated;
+            if (emailNode) emailNode.textContent = email || "Usuario conectado";
+        });
+    }
+
+    function captureAuthRedirect() {
+        if (!window.location.hash || !window.location.hash.includes("access_token")) return;
+
+        const params = new URLSearchParams(window.location.hash.slice(1));
+        if (params.get("access_token")) {
+            saveAuthSession({
+                access_token: params.get("access_token"),
+                refresh_token: params.get("refresh_token"),
+                token_type: params.get("token_type") || "bearer",
+                expires_in: Number(params.get("expires_in") || 3600)
+            });
+            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        }
+    }
+
+    async function requestSupabaseAuth(path, body, options) {
+        const config = getSupabaseConfig();
+        if (!config) {
+            throw new Error("Falta configurar Supabase.");
+        }
+
+        const settings = options || {};
+        const headers = {
+            apikey: config.anonKey,
+            Accept: "application/json"
+        };
+
+        if (settings.token) {
+            headers.Authorization = `Bearer ${settings.token}`;
+        }
+
+        const fetchOptions = {
+            method: settings.method || "POST",
+            headers
+        };
+
+        if (body !== null) {
+            headers["Content-Type"] = "application/json";
+            fetchOptions.body = JSON.stringify(body || {});
+        }
+
+        const response = await fetch(`${config.baseUrl}${path}`, fetchOptions);
+        const data = await response.json().catch(function () {
+            return {};
+        });
+
+        if (!response.ok) {
+            throw new Error(data.msg || data.message || data.error_description || "Error de autenticacion.");
+        }
+
+        return data;
+    }
+
+    function getSupabaseConfig() {
+        const config = window.MOTO_CRAZY_SUPABASE;
+        if (!config || !config.url || !config.anonKey) return null;
+        return {
+            baseUrl: config.url.replace(/\/$/, ""),
+            anonKey: config.anonKey
+        };
+    }
+
+    function saveAuthSession(session) {
+        if (!session || !session.access_token) return;
+
+        const expiresIn = Number(session.expires_in || 3600);
+        state.authSession = Object.assign({}, session, {
+            expires_at: session.expires_at || Math.floor(Date.now() / 1000) + expiresIn
+        });
+        writeStorage(STORAGE_KEYS.auth, state.authSession);
+    }
+
+    function clearAuthSession() {
+        state.authSession = null;
+        state.authUser = null;
+        writeStorage(STORAGE_KEYS.auth, null);
+    }
+
+    function loadAuthSession() {
+        const session = readStorage(STORAGE_KEYS.auth, null);
+        if (!session || !session.access_token) return null;
+        return session;
+    }
+
+    function setAuthMessage(message, isError) {
+        const node = document.getElementById("authMessage");
+        if (!node) return;
+        node.textContent = message || "";
+        node.classList.toggle("is-error", Boolean(isError));
+        node.hidden = !message;
     }
 
     function renderPage() {

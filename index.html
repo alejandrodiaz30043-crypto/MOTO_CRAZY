@@ -21,6 +21,25 @@
         </nav>
 
         <div class="header-actions">
+            <div class="user-menu-container">
+                <button class="user-icon-btn" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M20 21a8 8 0 0 0-16 0"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </button>
+                <div class="user-dropdown" role="menu">
+                    <p class="dropdown-title">Escoja una opci&oacute;n para entrar</p>
+                    <button class="btn-primary" type="button" data-action="open-auth-register">REGISTRARME COMO USUARIO</button>
+                    <button class="btn-primary" type="button" data-action="open-auth-login">INICIAR SESI&Oacute;N</button>
+                    <button class="btn-secondary" type="button" data-action="auth-logout">CERRAR SESI&Oacute;N</button>
+                    <button class="btn-link" type="button" data-action="open-auth-recover">Recuperar contrase&ntilde;a</button>
+                    <hr>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="google"><span class="social-icon social-icon--google">G</span> ENTRAR CON GOOGLE</button>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="facebook"><span class="social-icon social-icon--facebook">f</span> ENTRAR CON FACEBOOK</button>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="apple"><span class="social-icon social-icon--apple">A</span> ENTRAR CON APPLE</button>
+                </div>
+            </div>
             <button class="utility-button" type="button" data-action="toggle-theme" aria-label="Cambiar tema">Tema</button>
             <button class="utility-button" type="button" data-action="toggle-lang" aria-label="Cambiar idioma">EN</button>
             <button class="cart-button" type="button" data-action="toggle-cart" aria-label="Abrir carrito">
@@ -33,12 +52,15 @@
     <main>
         <section class="hero">
             <div class="hero__content">
-                <p class="eyebrow" data-i18n="heroEyebrow">Tienda para ruta urbana y aventura</p>
-                <h1 data-i18n="heroTitle">MotoCrazy MC</h1>
-                <p data-i18n="heroText">Encuentra motos, accesorios y datos utiles para salir a rodar con mas seguridad.</p>
+                <h1 class="hero-title">
+                    <span>VIVE LA PASI&Oacute;N</span>
+                    <span>SOBRE DOS</span>
+                    <span>RUEDAS</span>
+                </h1>
+                <p>Rendimiento, estilo y seguridad en cada curva.</p>
                 <div class="hero__actions">
-                    <a class="button button--primary" href="motos.html" data-i18n="seeMotos">Ver motos</a>
-                    <a class="button button--secondary" href="accesorios.html" data-i18n="seeAccessories">Ver accesorios</a>
+                    <a class="button button--primary" href="motos.html">VER MOTOS</a>
+                    <a class="button button--primary" href="accesorios.html">VER ACCESORIOS</a>
                 </div>
             </div>
         </section>
