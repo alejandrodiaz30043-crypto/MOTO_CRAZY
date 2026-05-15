@@ -18,6 +18,7 @@
             <a href="index.html" data-nav="inicio" data-i18n="navHome">Inicio</a>
             <a href="motos.html" data-nav="motos" data-i18n="navMotos">Motos</a>
             <a href="accesorios.html" data-nav="accesorios" data-i18n="navAccessories">Accesorios</a>
+            <a href="admin.html" data-nav="admin" data-i18n="adminNav">Admin</a>
         </nav>
 
         <div class="header-actions">
@@ -53,14 +54,14 @@
         <section class="hero">
             <div class="hero__content">
                 <h1 class="hero-title">
-                    <span>VIVE LA PASI&Oacute;N</span>
-                    <span>SOBRE DOS</span>
-                    <span>RUEDAS</span>
+                    <span data-i18n="heroLineOne">VIVE LA PASI&Oacute;N</span>
+                    <span data-i18n="heroLineTwo">SOBRE DOS</span>
+                    <span data-i18n="heroLineThree">RUEDAS</span>
                 </h1>
-                <p>Rendimiento, estilo y seguridad en cada curva.</p>
+                <p data-i18n="homeHeroText">Rendimiento, estilo y seguridad en cada curva.</p>
                 <div class="hero__actions">
-                    <a class="button button--primary" href="motos.html">VER MOTOS</a>
-                    <a class="button button--primary" href="accesorios.html">VER ACCESORIOS</a>
+                    <a class="button button--primary" href="motos.html" data-i18n="seeMotos">VER MOTOS</a>
+                    <a class="button button--primary" href="accesorios.html" data-i18n="seeAccessories">VER ACCESORIOS</a>
                 </div>
             </div>
         </section>
@@ -104,6 +105,14 @@
                 <h2 data-i18n="databaseTitle">Catalogo sincronizable</h2>
                 <p id="databaseStatus" data-i18n="databaseChecking">Revisando conexion con Supabase...</p>
             </article>
+        </section>
+
+        <section class="section">
+            <div class="section-heading">
+                <p class="eyebrow" data-i18n="orderSummary">Resumen de compra</p>
+                <h2 data-i18n="orderHistoryTitle">Historial de pedidos</h2>
+            </div>
+            <div id="orderHistory" class="order-history"></div>
         </section>
     </main>
 
