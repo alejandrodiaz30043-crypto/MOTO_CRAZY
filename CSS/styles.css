@@ -884,43 +884,77 @@ html[data-theme="light"] .product-card h3 {
     z-index: 140;
 }
 
-.product-detail__panel {
-    width: min(720px, 100%);
+.product-detail .product-detail__panel {
+    width: min(860px, calc(100vw - 32px));
+    max-height: min(620px, calc(100vh - 36px));
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.product-detail .auth-modal__close {
+    top: 10px;
+    right: 10px;
+}
+
+.product-detail .auth-modal__panel h2 {
+    margin: 0 42px 14px 0;
+    font-size: clamp(1.2rem, 2.4vw, 1.65rem);
+    line-height: 1.15;
 }
 
 .product-detail__body {
     display: grid;
-    grid-template-columns: minmax(180px, 0.8fr) 1fr;
+    grid-template-columns: minmax(180px, 0.72fr) minmax(0, 1.28fr);
     gap: 18px;
+    align-items: start;
 }
 
 .product-detail__body img {
     width: 100%;
+    max-height: min(230px, 34vh);
     aspect-ratio: 4 / 3;
     object-fit: contain;
     background: var(--surface-strong);
     border-radius: 8px;
 }
 
-.detail-specs {
-    display: grid;
-    gap: 10px;
-    margin: 0;
+.product-detail__body p {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
 }
 
-.detail-specs div,
+.detail-specs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    gap: 8px;
+    margin: 10px 0 0;
+}
+
+.detail-specs div {
+    min-width: 0;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-soft);
+}
+
 .order-card {
     padding: 12px;
 }
 
 .detail-specs dt {
     color: var(--muted);
-    font-size: 0.76rem;
+    font-size: 0.68rem;
     font-weight: 800;
 }
 
 .detail-specs dd {
     margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 
 .cart-exchange {
@@ -1373,6 +1407,42 @@ html[data-theme="light"] .product-card h3 {
     .advanced-filters,
     .product-detail__body {
         grid-template-columns: 1fr;
+    }
+
+    .product-detail .product-detail__panel {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 20px);
+        padding: 18px 14px 16px;
+    }
+
+    .product-detail .auth-modal__panel h2 {
+        margin-bottom: 10px;
+        font-size: 1.15rem;
+    }
+
+    .product-detail__body {
+        gap: 10px;
+    }
+
+    .product-detail__body img {
+        max-height: 170px;
+    }
+
+    .product-detail__body p {
+        font-size: 0.8rem;
+    }
+
+    .detail-specs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .detail-specs div {
+        padding: 8px;
+    }
+
+    .detail-specs dd {
+        font-size: 0.82rem;
     }
 
     .button,

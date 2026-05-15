@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Panel administrativo MotoCrazy MC para CRUD de motos y accesorios.">
     <title>MotoCrazy MC | Admin</title>
-    <link rel="stylesheet" href="./CSS/styles.css">
+    <link rel="stylesheet" href="./CSS/styles.css?v=2">
 </head>
 <body data-page="admin">
     <header class="site-header">
@@ -50,7 +50,12 @@
         <p data-i18n="footerText">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
     </footer>
 
-    <script src="./base/supabase.js"></script>
-    <script src="./base/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/supabaseClient.js"></script>
+    <script src="./js/auth.js"></script>
+    <script src="./js/motos.js"></script>
+    <script src="./js/accesorios.js"></script>
+    <script src="./js/carrito.js"></script>
+    <script src="./js/checkout.js"></script>
 </body>
 </html>
