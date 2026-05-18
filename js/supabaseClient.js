@@ -306,7 +306,7 @@
     const state = {
         page: document.body ? document.body.dataset.page || "inicio" : "inicio",
         lang: initialLanguage(),
-        theme: document.documentElement.dataset.theme || "dark",
+        theme: initialTheme(),
         user: null,
         catalogs: {
             motos: [],
@@ -430,6 +430,7 @@
             const action = actionElement.dataset.action;
             if (action === "toggle-theme") {
                 state.theme = state.theme === "dark" ? "light" : "dark";
+                localStorage.setItem("mc-theme", state.theme);
                 applyTheme();
                 updateControlLabels();
                 return;
@@ -516,6 +517,12 @@
         document.querySelectorAll("[data-nav]").forEach(function (link) {
             link.classList.toggle("is-active", link.dataset.nav === state.page);
         });
+    }
+
+    function initialTheme() {
+        const saved = localStorage.getItem("mc-theme");
+        if (saved === "light" || saved === "dark") return saved;
+        return "dark";
     }
 
     function initialLanguage() {
