@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Catalogo de accesorios para motociclistas MotoCrazy MC.">
+    <title>MotoCrazy MC | Accesorios</title>
+    <link rel="stylesheet" href="./CSS/styles.css?v=2">
+</head>
+<body data-page="accesorios">
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="MotoCrazy MC">
+            <span class="brand__name">MotoCrazy</span>
+            <span class="brand__tag">MC</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Navegacion principal">
+            <a href="index.html" data-nav="inicio" data-i18n="navHome">Inicio</a>
+            <a href="motos.html" data-nav="motos" data-i18n="navMotos">Motos</a>
+            <a href="accesorios.html" data-nav="accesorios" data-i18n="navAccessories">Accesorios</a>
+            <a href="admin.html" data-nav="admin" data-i18n="adminNav">Admin</a>
+        </nav>
+
+        <div class="header-actions">
+            <div class="user-menu-container">
+                <button class="user-icon-btn" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M20 21a8 8 0 0 0-16 0"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </button>
+                <div class="user-dropdown" role="menu">
+                    <p class="dropdown-title">Escoja una opci&oacute;n para entrar</p>
+                    <button class="btn-primary" type="button" data-action="open-auth-register">REGISTRARME COMO USUARIO</button>
+                    <button class="btn-primary" type="button" data-action="open-auth-login">INICIAR SESI&Oacute;N</button>
+                    <button class="btn-secondary" type="button" data-action="auth-logout">CERRAR SESI&Oacute;N</button>
+                    <button class="btn-link" type="button" data-action="open-auth-recover">Recuperar contrase&ntilde;a</button>
+                    <hr>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="google"><span class="social-icon social-icon--google">G</span> ENTRAR CON GOOGLE</button>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="facebook"><span class="social-icon social-icon--facebook">f</span> ENTRAR CON FACEBOOK</button>
+                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="apple"><span class="social-icon social-icon--apple">A</span> ENTRAR CON APPLE</button>
+                </div>
+            </div>
+            <button class="utility-button" type="button" data-action="toggle-theme" aria-label="Cambiar tema">Tema</button>
+            <button class="utility-button" type="button" data-action="toggle-lang" aria-label="Cambiar idioma">EN</button>
+            <button class="cart-button" type="button" data-action="toggle-cart" aria-label="Abrir carrito">
+                <span data-i18n="cartButton">Carrito</span>
+                <span id="cartCount" class="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-hero page-hero--compact">
+            <div>
+                <p class="eyebrow" data-i18n="accessoriesEyebrow">Equipamiento</p>
+                <h1 data-i18n="accessoriesTitle">Accesorios para piloto y moto</h1>
+                <p data-i18n="accessoriesIntro">Completa tu ruta con proteccion, comodidad y repuestos esenciales.</p>
+            </div>
+        </section>
+
+        <section class="section catalog-toolbar" aria-label="Filtros del catalogo">
+            <label class="search-box">
+                <span data-i18n="searchLabel">Buscar</span>
+                <input id="searchInput" type="search" data-i18n-placeholder="searchAccessories" placeholder="Buscar accesorio...">
+            </label>
+            <div id="categoryFilters" class="filter-row" aria-label="Categorias"></div>
+        </section>
+
+        <section class="section">
+            <p id="catalogStatus" class="inline-status" aria-live="polite"></p>
+            <div id="productGrid" class="product-grid catalog-grid"></div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p data-i18n="footerText">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/supabaseClient.js"></script>
+    <script src="./js/auth.js"></script>
+    <script src="./js/motos.js"></script>
+    <script src="./js/accesorios.js"></script>
+    <script src="./js/carrito.js"></script>
+    <script src="./js/checkout.js"></script>
+</body>
+</html>
