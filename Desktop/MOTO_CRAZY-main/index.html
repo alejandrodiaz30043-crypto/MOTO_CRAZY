@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MotoCrazy MC: tienda web de motos y accesorios con carrito de compras.">
+    <title>MotoCrazy MC | Inicio</title>
+    <link rel="stylesheet" href="./CSS/estilos.css?v=3">
+</head>
+<body data-pagina="inicio">
+    <header class="encabezado-sitio">
+        <a class="marca" href="index.html" aria-label="MotoCrazy MC">
+            <span class="marca__nombre">MotoCrazy</span>
+            <span class="marca__etiqueta">MC</span>
+        </a>
+
+        <nav class="navegacion-sitio" aria-label="Navegacion principal">
+            <a href="index.html" data-navegacion="inicio" data-i18n="navInicio">Inicio</a>
+            <a href="motos.html" data-navegacion="motos" data-i18n="navMotos">Motos</a>
+            <a href="accesorios.html" data-navegacion="accesorios" data-i18n="navAccesorios">Accesorios</a>
+            <a href="admin.html" data-navegacion="admin" data-i18n="navAdministracion" hidden aria-hidden="true">Admin</a>
+        </nav>
+
+        <section class="acciones-encabezado">
+            <section class="contenedor-menu-usuario">
+                <button class="boton-icono-usuario" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M20 21a8 8 0 0 0-16 0"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </button>
+                <aside class="desplegable-usuario" role="menu">
+                    <p class="titulo-desplegable">Escoja una opci&oacute;n para entrar</p>
+                    <button class="boton-primario" type="button" data-accion="abrir-registro-autenticacion">REGISTRARME COMO USUARIO</button>
+                    <button class="boton-primario" type="button" data-accion="abrir-inicio-autenticacion">INICIAR SESI&Oacute;N</button>
+                    <button class="boton-secundario" type="button" data-accion="cerrar-sesion">CERRAR SESI&Oacute;N</button>
+                    <button class="boton-enlace" type="button" data-accion="abrir-recuperacion-autenticacion">Recuperar contrase&ntilde;a</button>
+                    <hr>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="google"><span class="icono-social icono-social--google">G</span> ENTRAR CON GOOGLE</button>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="facebook"><span class="icono-social icono-social--facebook">f</span> ENTRAR CON FACEBOOK</button>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="apple"><span class="icono-social icono-social--apple">A</span> ENTRAR CON APPLE</button>
+                </aside>
+            </section>
+            <button class="boton-utilidad" type="button" data-accion="alternar-tema" aria-label="Cambiar tema">Tema</button>
+            <button class="boton-utilidad" type="button" data-accion="alternar-idioma" aria-label="Cambiar idioma">EN</button>
+            <button class="boton-carrito" type="button" data-accion="alternar-carrito" aria-label="Abrir carrito">
+                <span data-i18n="textoBotonCarrito">Carrito</span>
+                <span id="contadorCarrito" class="contador-carrito">0</span>
+            </button>
+        </section>
+    </header>
+
+    <main>
+        <section class="portada">
+            <section class="portada__contenido">
+                <h1 class="titulo-portada">
+                    <span data-i18n="lineaPortadaUno">VIVE LA PASI&Oacute;N</span>
+                    <span data-i18n="lineaPortadaDos">SOBRE DOS</span>
+                    <span data-i18n="lineaPortadaTres">RUEDAS</span>
+                </h1>
+                <p data-i18n="textoPortadaInicio">Rendimiento, estilo y seguridad en cada curva.</p>
+                <section class="portada__acciones">
+                    <a class="boton boton--primary" href="motos.html" data-i18n="verMotos">VER MOTOS</a>
+                    <a class="boton boton--primary" href="accesorios.html" data-i18n="verAccesorios">VER ACCESORIOS</a>
+                </section>
+            </section>
+        </section>
+
+        <section class="seccion seccion--ajustada">
+            <section class="franja-metricas" aria-label="Resumen de MotoCrazy MC">
+                <article class="metrica">
+                    <strong>12+</strong>
+                    <span data-i18n="metricaCatalogo">Referencias en catalogo</span>
+                </article>
+                <article class="metrica">
+                    <strong>2</strong>
+                    <span data-i18n="metricaIdiomas">Idiomas disponibles</span>
+                </article>
+                <article class="metrica">
+                    <strong>24/7</strong>
+                    <span data-i18n="metricaCarrito">Carrito guardado</span>
+                </article>
+            </section>
+        </section>
+
+        <section class="seccion">
+            <header class="encabezado-seccion">
+                <p class="ceja" data-i18n="cejaDestacados">Seleccion destacada</p>
+                <h2 data-i18n="tituloDestacados">Productos listos para agregar</h2>
+            </header>
+            <section id="grillaDestacados" class="grilla-productos"></section>
+        </section>
+
+        <section class="seccion seccion-dividida">
+            <article class="panel-ruta">
+                <p class="ceja" data-i18n="cejaClima">API gratuita</p>
+                <h2 data-i18n="tituloClima">Clima para rodar en Bogota</h2>
+                <section id="widgetClima" class="widget-clima" aria-live="polite">
+                    <p data-i18n="climaCargando">Consultando clima actual...</p>
+                </section>
+            </article>
+
+            <article class="panel-ruta panel-ruta--acento">
+                <p class="ceja" data-i18n="cejaBaseDatos">Base de datos</p>
+                <h2 data-i18n="tituloBaseDatos">Catalogo sincronizable</h2>
+                <p id="estadoBaseDatos" data-i18n="baseDatosRevisando">Revisando conexion con Supabase...</p>
+            </article>
+        </section>
+
+        <section class="seccion">
+            <header class="encabezado-seccion">
+                <p class="ceja" data-i18n="resumenPedido">Resumen de compra</p>
+                <h2 data-i18n="historialPedidosTitle">Historial de pedidos</h2>
+            </header>
+            <section id="historialPedidos" class="historial-pedidos"></section>
+        </section>
+    </main>
+
+    <footer class="pie-sitio">
+        <p data-i18n="textoPie">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
+        <p class="enlaces-pie">
+            <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>
+            <span>Supabase</span>
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./js/cliente-supabase.js"></script>
+    <script src="./js/autenticacion.js?v=3"></script>
+    <script src="./js/administracion.js"></script>
+    <script src="./js/motos.js"></script>
+    <script src="./js/accesorios.js"></script>
+    <script src="./js/carrito.js"></script>
+    <script src="./js/finalizar-compra.js"></script>
+</body>
+</html>
