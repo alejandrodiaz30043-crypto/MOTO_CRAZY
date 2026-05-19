@@ -1,88 +1,89 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-tema="oscuro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Catalogo de accesorios para motociclistas MotoCrazy MC.">
     <title>MotoCrazy MC | Accesorios</title>
-    <link rel="stylesheet" href="./CSS/styles.css?v=2">
+    <link rel="stylesheet" href="./CSS/estilos.css?v=3">
 </head>
-<body data-page="accesorios">
-    <header class="site-header">
-        <a class="brand" href="index.html" aria-label="MotoCrazy MC">
-            <span class="brand__name">MotoCrazy</span>
-            <span class="brand__tag">MC</span>
+<body data-pagina="accesorios">
+    <header class="encabezado-sitio">
+        <a class="marca" href="index.html" aria-label="MotoCrazy MC">
+            <span class="marca__nombre">MotoCrazy</span>
+            <span class="marca__etiqueta">MC</span>
         </a>
 
-        <nav class="site-nav" aria-label="Navegacion principal">
-            <a href="index.html" data-nav="inicio" data-i18n="navHome">Inicio</a>
-            <a href="motos.html" data-nav="motos" data-i18n="navMotos">Motos</a>
-            <a href="accesorios.html" data-nav="accesorios" data-i18n="navAccessories">Accesorios</a>
-            <a href="admin.html" data-nav="admin" data-i18n="adminNav">Admin</a>
+        <nav class="navegacion-sitio" aria-label="Navegacion principal">
+            <a href="index.html" data-navegacion="inicio" data-i18n="navInicio">Inicio</a>
+            <a href="motos.html" data-navegacion="motos" data-i18n="navMotos">Motos</a>
+            <a href="accesorios.html" data-navegacion="accesorios" data-i18n="navAccesorios">Accesorios</a>
+            <a href="admin.html" data-navegacion="admin" data-i18n="navAdministracion" hidden aria-hidden="true">Admin</a>
         </nav>
 
-        <div class="header-actions">
-            <div class="user-menu-container">
-                <button class="user-icon-btn" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
+        <section class="acciones-encabezado">
+            <section class="contenedor-menu-usuario">
+                <button class="boton-icono-usuario" type="button" aria-label="Abrir opciones de usuario" aria-haspopup="true">
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M20 21a8 8 0 0 0-16 0"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
                 </button>
-                <div class="user-dropdown" role="menu">
-                    <p class="dropdown-title">Escoja una opci&oacute;n para entrar</p>
-                    <button class="btn-primary" type="button" data-action="open-auth-register">REGISTRARME COMO USUARIO</button>
-                    <button class="btn-primary" type="button" data-action="open-auth-login">INICIAR SESI&Oacute;N</button>
-                    <button class="btn-secondary" type="button" data-action="auth-logout">CERRAR SESI&Oacute;N</button>
-                    <button class="btn-link" type="button" data-action="open-auth-recover">Recuperar contrase&ntilde;a</button>
+                <aside class="desplegable-usuario" role="menu">
+                    <p class="titulo-desplegable">Escoja una opci&oacute;n para entrar</p>
+                    <button class="boton-primario" type="button" data-accion="abrir-registro-autenticacion">REGISTRARME COMO USUARIO</button>
+                    <button class="boton-primario" type="button" data-accion="abrir-inicio-autenticacion">INICIAR SESI&Oacute;N</button>
+                    <button class="boton-secundario" type="button" data-accion="cerrar-sesion">CERRAR SESI&Oacute;N</button>
+                    <button class="boton-enlace" type="button" data-accion="abrir-recuperacion-autenticacion">Recuperar contrase&ntilde;a</button>
                     <hr>
-                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="google"><span class="social-icon social-icon--google">G</span> ENTRAR CON GOOGLE</button>
-                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="facebook"><span class="social-icon social-icon--facebook">f</span> ENTRAR CON FACEBOOK</button>
-                    <button class="btn-social" type="button" data-action="auth-oauth" data-provider="apple"><span class="social-icon social-icon--apple">A</span> ENTRAR CON APPLE</button>
-                </div>
-            </div>
-            <button class="utility-button" type="button" data-action="toggle-theme" aria-label="Cambiar tema">Tema</button>
-            <button class="utility-button" type="button" data-action="toggle-lang" aria-label="Cambiar idioma">EN</button>
-            <button class="cart-button" type="button" data-action="toggle-cart" aria-label="Abrir carrito">
-                <span data-i18n="cartButton">Carrito</span>
-                <span id="cartCount" class="cart-count">0</span>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="google"><span class="icono-social icono-social--google">G</span> ENTRAR CON GOOGLE</button>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="facebook"><span class="icono-social icono-social--facebook">f</span> ENTRAR CON FACEBOOK</button>
+                    <button class="boton-social" type="button" data-accion="autenticacion-oauth" data-proveedor="apple"><span class="icono-social icono-social--apple">A</span> ENTRAR CON APPLE</button>
+                </aside>
+            </section>
+            <button class="boton-utilidad" type="button" data-accion="alternar-tema" aria-label="Cambiar tema">Tema</button>
+            <button class="boton-utilidad" type="button" data-accion="alternar-idioma" aria-label="Cambiar idioma">EN</button>
+            <button class="boton-carrito" type="button" data-accion="alternar-carrito" aria-label="Abrir carrito">
+                <span data-i18n="textoBotonCarrito">Carrito</span>
+                <span id="contadorCarrito" class="contador-carrito">0</span>
             </button>
-        </div>
+        </section>
     </header>
 
     <main>
-        <section class="page-hero page-hero--compact">
-            <div>
-                <p class="eyebrow" data-i18n="accessoriesEyebrow">Equipamiento</p>
-                <h1 data-i18n="accessoriesTitle">Accesorios para piloto y moto</h1>
-                <p data-i18n="accessoriesIntro">Completa tu ruta con proteccion, comodidad y repuestos esenciales.</p>
-            </div>
+        <section class="portada-pagina portada-pagina--compacta">
+            <section>
+                <p class="ceja" data-i18n="cejaAccesorios">Equipamiento</p>
+                <h1 data-i18n="tituloAccesorios">Accesorios para piloto y moto</h1>
+                <p data-i18n="introAccesorios">Completa tu ruta con proteccion, comodidad y repuestos esenciales.</p>
+            </section>
         </section>
 
-        <section class="section catalog-toolbar" aria-label="Filtros del catalogo">
-            <label class="search-box">
-                <span data-i18n="searchLabel">Buscar</span>
-                <input id="searchInput" type="search" data-i18n-placeholder="searchAccessories" placeholder="Buscar accesorio...">
+        <section class="seccion barra-catalogo" aria-label="Filtros del catalogo">
+            <label class="caja-busqueda">
+                <span data-i18n="etiquetaBusqueda">Buscar</span>
+                <input id="entradaBusqueda" type="search" data-i18n-placeholder="busquedaAccesorios" placeholder="Buscar accesorio...">
             </label>
-            <div id="categoryFilters" class="filter-row" aria-label="Categorias"></div>
+            <section id="filtrosCategorias" class="fila-filtros" aria-label="Categorias"></section>
         </section>
 
-        <section class="section">
-            <p id="catalogStatus" class="inline-status" aria-live="polite"></p>
-            <div id="productGrid" class="product-grid catalog-grid"></div>
+        <section class="seccion">
+            <p id="estadoCatalogo" class="estado-linea" aria-live="polite"></p>
+            <section id="grillaProductos" class="grilla-productos grilla-catalogo"></section>
         </section>
     </main>
 
-    <footer class="site-footer">
-        <p data-i18n="footerText">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
+    <footer class="pie-sitio">
+        <p data-i18n="textoPie">MotoCrazy MC - Proyecto web con HTML, CSS, JavaScript, Supabase y API gratuita.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./js/supabaseClient.js"></script>
-    <script src="./js/auth.js"></script>
+    <script src="./js/cliente-supabase.js"></script>
+    <script src="./js/autenticacion.js?v=3"></script>
+    <script src="./js/administracion.js"></script>
     <script src="./js/motos.js"></script>
     <script src="./js/accesorios.js"></script>
     <script src="./js/carrito.js"></script>
-    <script src="./js/checkout.js"></script>
+    <script src="./js/finalizar-compra.js"></script>
 </body>
 </html>

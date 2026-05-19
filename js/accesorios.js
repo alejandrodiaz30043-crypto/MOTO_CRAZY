@@ -1,26 +1,26 @@
 (function () {
     "use strict";
 
-    const App = window.MotoCrazy;
+    const Aplicacion = window.MotoCrazy;
     let loadPromise = null;
     let accessoryPageBound = false;
 
-    App.accesorios = {
+    Aplicacion.accesorios = {
         load: loadAccessories,
         render: renderAccessoriesPage
     };
 
-    App.onReady(initAccessories);
+    Aplicacion.onReady(initAccessories);
 
     async function initAccessories() {
-        if (["inicio", "accesorios", "admin"].includes(App.state.page)) {
+        if (["inicio", "accesorios", "admin"].includes(Aplicacion.estado.page)) {
             await loadAccessories();
         }
 
-        if (App.state.page === "accesorios") {
+        if (Aplicacion.estado.page === "accesorios") {
             bindAccessoriesPage();
             renderAccessoriesPage();
-            App.onLanguageChange(renderAccessoriesPage);
+            Aplicacion.onLanguageChange(renderAccessoriesPage);
         }
     }
 
@@ -28,17 +28,17 @@
         if (loadPromise && !force) return loadPromise;
 
         loadPromise = (async function () {
-            const client = App.requireClient();
-            if (!client) {
-                App.state.catalogs.accesorios = [];
-                App.setCatalogStatus("accesorios", "error");
+            const cliente = Aplicacion.requireClient();
+            if (!cliente) {
+                Aplicacion.estado.catalogs.accesorios = [];
+                Aplicacion.setCatalogStatus("accesorios", "error");
                 return [];
             }
 
-            App.setCatalogStatus("accesorios", "loading");
+            Aplicacion.setCatalogStatus("accesorios", "loading");
 
             try {
-                const result = await client
+                const result = await cliente
                     .from("productos_accesorios")
                     .select("id_producto,nombre,descripcion,imagen_url,activo,id_categoria_accesorio,created_at,categorias_accesorios(nombre,imagen_url),variantes_accesorios(id_variante,id_producto,id_genero_accesorio,id_talla_accesorio,precio,stock,activo,created_at)")
                     .eq("activo", true)
@@ -47,13 +47,13 @@
                 if (result.error) throw result.error;
 
                 const rows = Array.isArray(result.data) ? result.data : [];
-                App.state.catalogs.accesorios = rows.map(mapAccessory);
-                App.setCatalogStatus("accesorios", rows.length ? "loaded" : "empty");
-                return App.state.catalogs.accesorios;
+                Aplicacion.estado.catalogs.accesorios = rows.map(mapAccessory);
+                Aplicacion.setCatalogStatus("accesorios", rows.length ? "loaded" : "empty");
+                return Aplicacion.estado.catalogs.accesorios;
             } catch (error) {
                 console.error("Error cargando accesorios desde Supabase:", error);
-                App.state.catalogs.accesorios = [];
-                App.setCatalogStatus("accesorios", "error");
+                Aplicacion.estado.catalogs.accesorios = [];
+                Aplicacion.setCatalogStatus("accesorios", "error");
                 return [];
             } finally {
                 renderAccessoriesPage();
@@ -64,7 +64,7 @@
     }
 
     function mapAccessory(row) {
-        const categoryName = App.nestedName(row.categorias_accesorios) || "Accesorio";
+        const categoryName = Aplicacion.nestedName(row.categorias_accesorios) || "Accesorio";
         const variants = Array.isArray(row.variantes_accesorios)
             ? row.variantes_accesorios.filter(function (variant) {
                 return variant.activo !== false;
@@ -73,32 +73,32 @@
                     id_variante: variant.id_variante,
                     id_genero_accesorio: variant.id_genero_accesorio,
                     id_talla_accesorio: variant.id_talla_accesorio,
-                    price: Number(variant.precio || 0),
+                    precio: Number(variant.precio || 0),
                     stock: Number(variant.stock || 0)
                 };
             })
             : [];
         const prices = variants.map(function (variant) {
-            return Number(variant.price || 0);
+            return Number(variant.precio || 0);
         }).filter(function (price) {
             return price > 0;
         });
 
         return {
             id: String(row.id_producto),
-            productId: String(row.id_producto),
+            idProducto: String(row.id_producto),
             type: "accesorio",
             catalogType: "accesorios",
             name: row.nombre || "Accesorio",
-            brand: "MotoCrazy",
-            category: App.normalizeCategory(categoryName),
+            marca: "MotoCrazy",
+            category: Aplicacion.normalizeCategory(categoryName),
             categoryName,
-            price: prices.length ? Math.min.apply(null, prices) : null,
-            pricePrefix: prices.length > 1,
+            precio: prices.length ? Math.min.apply(null, prices) : null,
+            prefijoPrecio: prices.length > 1,
             stock: variants.reduce(function (sum, variant) {
                 return sum + Number(variant.stock || 0);
             }, 0),
-            image: row.imagen_url || App.config.fallbackImage,
+            image: row.imagen_url || Aplicacion.config.fallbackImage,
             description: row.descripcion || "",
             variants
         };
@@ -108,80 +108,80 @@
         if (accessoryPageBound) return;
         accessoryPageBound = true;
 
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) {
-            searchInput.addEventListener("input", function () {
-                App.state.filters.accesorios.query = searchInput.value;
+        const entradaBusqueda = document.getElementById("entradaBusqueda");
+        if (entradaBusqueda) {
+            entradaBusqueda.addEventListener("input", function () {
+                Aplicacion.estado.filters.accesorios.query = entradaBusqueda.value;
                 renderAccessoriesPage();
             });
         }
 
         document.addEventListener("click", function (event) {
-            const categoryButton = event.target.closest("[data-accessory-category]");
+            const categoryButton = event.target.closest("[data-categoria-accesorio]");
             if (!categoryButton) return;
 
-            App.state.filters.accesorios.category = categoryButton.dataset.accessoryCategory;
+            Aplicacion.estado.filters.accesorios.category = categoryButton.dataset.categoriaAccesorio;
             renderAccessoriesPage();
         });
     }
 
     function renderAccessoriesPage() {
-        if (App.state.page !== "accesorios") return;
+        if (Aplicacion.estado.page !== "accesorios") return;
 
-        const status = document.getElementById("catalogStatus");
-        const grid = document.getElementById("productGrid");
+        const status = document.getElementById("estadoCatalogo");
+        const grid = document.getElementById("grillaProductos");
         if (!grid) return;
 
         renderCategoryFilters();
 
-        if (status) status.textContent = App.catalogStatusText("accesorios");
+        if (status) status.textContent = Aplicacion.estadoCatalogoText("accesorios");
 
-        const products = filteredAccessories();
-        if (!products.length) {
-            const message = App.state.catalogStatus.accesorios === "loading" ? App.t("catalogLoading") : App.t("noResults");
-            grid.innerHTML = `<p class="empty-state">${App.escapeHTML(message)}</p>`;
+        const productos = filteredAccessories();
+        if (!productos.length) {
+            const message = Aplicacion.estado.estadoCatalogo.accesorios === "loading" ? Aplicacion.t("catalogoCargando") : Aplicacion.t("sinResultados");
+            grid.innerHTML = `<p class="estado-vacio">${Aplicacion.escapeHTML(message)}</p>`;
             return;
         }
 
-        grid.innerHTML = products.map(function (product) {
-            return App.productCard(product);
+        grid.innerHTML = productos.map(function (producto) {
+            return Aplicacion.tarjetaProducto(producto);
         }).join("");
     }
 
     function renderCategoryFilters() {
-        const node = document.getElementById("categoryFilters");
+        const node = document.getElementById("filtrosCategorias");
         if (!node) return;
 
-        const categories = App.unique(App.state.catalogs.accesorios.map(function (product) {
-            return product.category;
+        const categories = Aplicacion.unique(Aplicacion.estado.catalogs.accesorios.map(function (producto) {
+            return producto.category;
         }));
-        const active = App.state.filters.accesorios.category;
+        const active = Aplicacion.estado.filters.accesorios.category;
 
         node.innerHTML = ["all"].concat(categories).map(function (category) {
-            const label = category === "all" ? App.t("all") : App.categoryLabel(category, "accesorios");
+            const label = category === "all" ? Aplicacion.t("all") : Aplicacion.etiquetaCategoria(category, "accesorios");
             return `
-                <button type="button" data-accessory-category="${App.escapeAttribute(category)}" class="${category === active ? "is-active" : ""}">
-                    ${App.escapeHTML(label)}
+                <button type="button" data-categoria-accesorio="${Aplicacion.escapeAttribute(category)}" class="${category === active ? "esta-activo" : ""}">
+                    ${Aplicacion.escapeHTML(label)}
                 </button>
             `;
         }).join("");
     }
 
     function filteredAccessories() {
-        const filters = App.state.filters.accesorios;
-        const query = App.normalizeText(filters.query);
+        const filters = Aplicacion.estado.filters.accesorios;
+        const query = Aplicacion.normalizeText(filters.query);
 
-        return App.state.catalogs.accesorios.filter(function (product) {
-            const variantText = (product.variants || []).map(function (variant) {
+        return Aplicacion.estado.catalogs.accesorios.filter(function (producto) {
+            const variantText = (producto.variants || []).map(function (variant) {
                 return [variant.id_variante, variant.id_genero_accesorio, variant.id_talla_accesorio].join(" ");
             }).join(" ");
-            const matchesQuery = !query || App.normalizeText([
-                product.name,
-                product.categoryName,
-                product.description,
+            const matchesQuery = !query || Aplicacion.normalizeText([
+                producto.name,
+                producto.categoryName,
+                producto.description,
                 variantText
             ].join(" ")).includes(query);
-            const matchesCategory = filters.category === "all" || product.category === filters.category;
+            const matchesCategory = filters.category === "all" || producto.category === filters.category;
             return matchesQuery && matchesCategory;
         });
     }

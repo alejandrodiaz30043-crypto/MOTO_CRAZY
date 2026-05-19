@@ -1,20 +1,20 @@
 (function () {
     "use strict";
 
-    const App = window.MotoCrazy;
-    let cartChannel = null;
-    let cartLoading = false;
+    const Aplicacion = window.MotoCrazy;
+    let canalCarrito = null;
+    let cargandoCarrito = false;
 
-    App.cart = {
+    Aplicacion.cart = {
         load: loadCartForUser,
         render: renderCart,
         clear: clearCart,
-        total: cartTotal,
+        total: totalCarrito,
         toggle: toggleCart
     };
 
-    App.onReady(initCart);
-    App.onLanguageChange(renderCart);
+    Aplicacion.onReady(initCart);
+    Aplicacion.onLanguageChange(renderCart);
 
     async function initCart() {
         createCartDrawer();
@@ -25,30 +25,30 @@
             loadCartForUser();
         });
 
-        if (App.state.user) {
+        if (Aplicacion.estado.user) {
             await loadCartForUser();
         }
     }
 
     function createCartDrawer() {
-        if (document.getElementById("cartDrawer")) return;
+        if (document.getElementById("cajonCarrito")) return;
 
         document.body.insertAdjacentHTML("beforeend", `
-            <div id="cartOverlay" class="cart-overlay" data-action="close-cart"></div>
-            <aside id="cartDrawer" class="cart-drawer" aria-hidden="true" aria-labelledby="cartTitle">
-                <header class="cart-drawer__header">
-                    <h2 id="cartTitle">${App.escapeHTML(App.t("cartTitle"))}</h2>
-                    <button class="icon-button" type="button" data-action="close-cart" aria-label="${App.escapeAttribute(App.t("closeCart"))}">X</button>
+            <section id="superposicionCarrito" class="superposicion-carrito" data-accion="cerrar-carrito"></section>
+            <aside id="cajonCarrito" class="cajon-carrito" aria-hidden="true" aria-labelledby="tituloCarrito">
+                <header class="cajon-carrito__encabezado">
+                    <h2 id="tituloCarrito">${Aplicacion.escapeHTML(Aplicacion.t("tituloCarrito"))}</h2>
+                    <button class="boton-icono" type="button" data-accion="cerrar-carrito" aria-label="${Aplicacion.escapeAttribute(Aplicacion.t("closeCart"))}">X</button>
                 </header>
-                <ul id="cartList" class="cart-list"></ul>
-                <footer class="cart-drawer__footer">
-                    <div class="cart-total-row">
-                        <span>${App.escapeHTML(App.t("cartTotal"))}</span>
-                        <strong id="cartTotal">${App.formatMoney(0)}</strong>
-                    </div>
-                    <p id="cartExchange" class="cart-exchange"></p>
-                    <button class="checkout-button" type="button" data-action="checkout">${App.escapeHTML(App.t("checkout"))}</button>
-                    <button class="button button--secondary" type="button" data-action="clear-cart">${App.escapeHTML(App.t("clearCart"))}</button>
+                <ul id="listaCarrito" class="lista-carrito"></ul>
+                <footer class="cajon-carrito__pie">
+                    <section class="fila-total-carrito">
+                        <span>${Aplicacion.escapeHTML(Aplicacion.t("totalCarrito"))}</span>
+                        <strong id="totalCarrito">${Aplicacion.formatMoney(0)}</strong>
+                    </section>
+                    <p id="cambioCarrito" class="cambio-carrito"></p>
+                    <button class="boton-finalizar" type="button" data-accion="finalizarCompra">${Aplicacion.escapeHTML(Aplicacion.t("finalizarCompra"))}</button>
+                    <button class="boton boton--secondary" type="button" data-accion="vaciar-carrito">${Aplicacion.escapeHTML(Aplicacion.t("clearCart"))}</button>
                 </footer>
             </aside>
         `);
@@ -56,53 +56,53 @@
 
     function bindCartEvents() {
         document.addEventListener("click", async function (event) {
-            const actionElement = event.target.closest("[data-action]");
+            const actionElement = event.target.closest("[data-accion]");
             if (!actionElement) return;
 
-            const action = actionElement.dataset.action;
-            if (action === "toggle-cart") {
+            const action = actionElement.dataset.accion;
+            if (action === "alternar-carrito") {
                 toggleCart();
                 return;
             }
 
-            if (action === "close-cart") {
+            if (action === "cerrar-carrito") {
                 toggleCart(false);
                 return;
             }
 
-            if (action === "add-to-cart") {
-                await addToCart(actionElement.dataset.productType, actionElement.dataset.productId);
+            if (action === "agregar-carrito") {
+                await agregarAlCarrito(actionElement.dataset.tipoProducto, actionElement.dataset.idProducto);
                 return;
             }
 
-            if (action === "increase") {
-                await changeQuantity(actionElement.dataset.cartId, 1);
+            if (action === "aumentar") {
+                await changeQuantity(actionElement.dataset.idCarrito, 1);
                 return;
             }
 
-            if (action === "decrease") {
-                await changeQuantity(actionElement.dataset.cartId, -1);
+            if (action === "disminuir") {
+                await changeQuantity(actionElement.dataset.idCarrito, -1);
                 return;
             }
 
-            if (action === "remove") {
-                await removeFromCart(actionElement.dataset.cartId);
+            if (action === "eliminar") {
+                await eliminarFromCart(actionElement.dataset.idCarrito);
                 return;
             }
 
-            if (action === "clear-cart") {
+            if (action === "vaciar-carrito") {
                 await clearCart();
                 return;
             }
 
-            if (action === "checkout") {
-                if (App.checkout && App.checkout.checkoutCart) {
-                    await App.checkout.checkoutCart();
+            if (action === "finalizarCompra") {
+                if (Aplicacion.finalizarCompra && Aplicacion.finalizarCompra.finalizarCompraCart) {
+                    await Aplicacion.finalizarCompra.finalizarCompraCart();
                 }
             }
         });
 
-        const overlay = document.getElementById("cartOverlay");
+        const overlay = document.getElementById("superposicionCarrito");
         if (overlay) {
             overlay.addEventListener("click", function () {
                 toggleCart(false);
@@ -111,13 +111,13 @@
     }
 
     async function loadCartForUser() {
-        if (cartLoading) return;
-        cartLoading = true;
+        if (cargandoCarrito) return;
+        cargandoCarrito = true;
 
         try {
-            if (!App.state.user) {
-                App.state.cart = null;
-                App.state.cartItems = [];
+            if (!Aplicacion.estado.user) {
+                Aplicacion.estado.cart = null;
+                Aplicacion.estado.itemsCarrito = [];
                 unsubscribeCart();
                 renderCart();
                 return;
@@ -129,24 +129,24 @@
             subscribeCart();
         } catch (error) {
             console.error("Error cargando carrito desde Supabase:", error);
-            App.showToast(App.t("cartLoadError"));
-            App.state.cartItems = [];
+            Aplicacion.showToast(Aplicacion.t("errorCargaCarrito"));
+            Aplicacion.estado.itemsCarrito = [];
             renderCart();
         } finally {
-            cartLoading = false;
+            cargandoCarrito = false;
         }
     }
 
     async function ensureActiveCart() {
-        const client = App.requireClient();
-        const user = App.state.user;
-        if (!client || !user) return null;
+        const cliente = Aplicacion.requireClient();
+        const user = Aplicacion.estado.user;
+        if (!cliente || !user) return null;
 
-        if (App.state.cart && App.state.cart.user_id === user.id && App.state.cart.estado === "activo") {
-            return App.state.cart;
+        if (Aplicacion.estado.cart && Aplicacion.estado.cart.user_id === user.id && Aplicacion.estado.cart.estado === "activo") {
+            return Aplicacion.estado.cart;
         }
 
-        const current = await client
+        const current = await cliente
             .from("carritos")
             .select("id_carrito,user_id,estado,created_at,updated_at")
             .eq("user_id", user.id)
@@ -157,11 +157,11 @@
         if (current.error) throw current.error;
 
         if (current.data && current.data.length) {
-            App.state.cart = current.data[0];
-            return App.state.cart;
+            Aplicacion.estado.cart = current.data[0];
+            return Aplicacion.estado.cart;
         }
 
-        const created = await client
+        const created = await cliente
             .from("carritos")
             .insert({
                 user_id: user.id,
@@ -171,33 +171,33 @@
             .single();
 
         if (created.error) throw created.error;
-        App.state.cart = created.data;
-        return App.state.cart;
+        Aplicacion.estado.cart = created.data;
+        return Aplicacion.estado.cart;
     }
 
     async function loadCartItems() {
-        const client = App.requireClient();
-        const cart = App.state.cart;
-        if (!client || !cart) return;
+        const cliente = Aplicacion.requireClient();
+        const cart = Aplicacion.estado.cart;
+        if (!cliente || !cart) return;
 
-        const result = await client
+        const result = await cliente
             .from("carrito_items")
             .select("id_item,id_carrito,producto_id,tipo,nombre,imagen_url,precio,cantidad,subtotal,created_at")
             .eq("id_carrito", cart.id_carrito)
             .order("created_at", { ascending: true });
 
         if (result.error) throw result.error;
-        App.state.cartItems = Array.isArray(result.data) ? result.data : [];
+        Aplicacion.estado.itemsCarrito = Array.isArray(result.data) ? result.data : [];
         renderCart();
     }
 
     function subscribeCart() {
-        const client = App.requireClient();
-        const cart = App.state.cart;
-        if (!client || !cart || !client.channel) return;
+        const cliente = Aplicacion.requireClient();
+        const cart = Aplicacion.estado.cart;
+        if (!cliente || !cart || !cliente.channel) return;
 
         unsubscribeCart();
-        cartChannel = client
+        canalCarrito = cliente
             .channel(`cart-${cart.id_carrito}`)
             .on("postgres_changes", {
                 event: "*",
@@ -211,83 +211,83 @@
     }
 
     function unsubscribeCart() {
-        const client = App.client;
-        if (client && cartChannel) {
-            client.removeChannel(cartChannel);
+        const cliente = Aplicacion.cliente;
+        if (cliente && canalCarrito) {
+            cliente.removeChannel(canalCarrito);
         }
-        cartChannel = null;
+        canalCarrito = null;
     }
 
-    async function addToCart(type, id) {
-        const client = App.requireClient();
-        if (!client) return;
+    async function agregarAlCarrito(type, id) {
+        const cliente = Aplicacion.requireClient();
+        if (!cliente) return;
 
-        if (!App.state.user) {
-            App.showToast(App.t("cartLoginRequired"));
-            if (App.auth) App.auth.openModal("login");
+        if (!Aplicacion.estado.user) {
+            Aplicacion.showToast(Aplicacion.t("carritoSesionRequerida"));
+            if (Aplicacion.auth) Aplicacion.auth.openModal("login");
             return;
         }
 
-        const product = App.findProduct(type, id);
-        if (!product) return;
+        const producto = Aplicacion.findProduct(type, id);
+        if (!producto) return;
 
         try {
             await ensureActiveCart();
-            const existing = App.state.cartItems.find(function (item) {
-                return String(item.producto_id) === String(product.productId || product.id) && item.tipo === product.type;
+            const existing = Aplicacion.estado.itemsCarrito.find(function (item) {
+                return String(item.producto_id) === String(producto.idProducto || producto.id) && item.tipo === producto.type;
             });
 
             if (existing) {
                 const quantity = Number(existing.cantidad || 0) + 1;
-                const result = await client
+                const result = await cliente
                     .from("carrito_items")
                     .update({
                         cantidad: quantity,
-                        subtotal: Number(existing.precio || product.price || 0) * quantity
+                        subtotal: Number(existing.precio || producto.precio || 0) * quantity
                     })
                     .eq("id_item", existing.id_item);
                 if (result.error) throw result.error;
             } else {
-                const result = await client
+                const result = await cliente
                     .from("carrito_items")
                     .insert({
-                        id_carrito: App.state.cart.id_carrito,
-                        producto_id: String(product.productId || product.id),
-                        tipo: product.type,
-                        nombre: product.name,
-                        imagen_url: product.image || App.config.fallbackImage,
-                        precio: Number(product.price || 0),
+                        id_carrito: Aplicacion.estado.cart.id_carrito,
+                        producto_id: String(producto.idProducto || producto.id),
+                        tipo: producto.type,
+                        nombre: producto.name,
+                        imagen_url: producto.image || Aplicacion.config.fallbackImage,
+                        precio: Number(producto.precio || 0),
                         cantidad: 1,
-                        subtotal: Number(product.price || 0)
+                        subtotal: Number(producto.precio || 0)
                     });
                 if (result.error) throw result.error;
             }
 
             await touchCart();
             await loadCartItems();
-            App.showToast(App.t("itemAdded"));
+            Aplicacion.showToast(Aplicacion.t("itemAgregado"));
             toggleCart(true);
         } catch (error) {
             console.error("Error actualizando carrito:", error);
-            App.showToast(App.t("cartWriteError"));
+            Aplicacion.showToast(Aplicacion.t("errorEscrituraCarrito"));
         }
     }
 
     async function changeQuantity(idItem, amount) {
-        const client = App.requireClient();
-        const item = App.state.cartItems.find(function (cartItem) {
+        const cliente = Aplicacion.requireClient();
+        const item = Aplicacion.estado.itemsCarrito.find(function (cartItem) {
             return String(cartItem.id_item) === String(idItem);
         });
-        if (!client || !item) return;
+        if (!cliente || !item) return;
 
         const nextQuantity = Math.max(0, Number(item.cantidad || 0) + amount);
         try {
             if (nextQuantity <= 0) {
-                await removeFromCart(idItem);
+                await eliminarFromCart(idItem);
                 return;
             }
 
-            const result = await client
+            const result = await cliente
                 .from("carrito_items")
                 .update({
                     cantidad: nextQuantity,
@@ -300,16 +300,16 @@
             await loadCartItems();
         } catch (error) {
             console.error("Error cambiando cantidad:", error);
-            App.showToast(App.t("cartWriteError"));
+            Aplicacion.showToast(Aplicacion.t("errorEscrituraCarrito"));
         }
     }
 
-    async function removeFromCart(idItem) {
-        const client = App.requireClient();
-        if (!client) return;
+    async function eliminarFromCart(idItem) {
+        const cliente = Aplicacion.requireClient();
+        if (!cliente) return;
 
         try {
-            const result = await client
+            const result = await cliente
                 .from("carrito_items")
                 .delete()
                 .eq("id_item", idItem);
@@ -317,121 +317,121 @@
 
             await touchCart();
             await loadCartItems();
-            App.showToast(App.t("itemRemoved"));
+            Aplicacion.showToast(Aplicacion.t("itemEliminado"));
         } catch (error) {
             console.error("Error eliminando item:", error);
-            App.showToast(App.t("cartWriteError"));
+            Aplicacion.showToast(Aplicacion.t("errorEscrituraCarrito"));
         }
     }
 
     async function clearCart(options) {
-        const settings = options || {};
-        const client = App.requireClient();
-        const cart = App.state.cart;
-        if (!client || !cart) return;
+        const ajustes = options || {};
+        const cliente = Aplicacion.requireClient();
+        const cart = Aplicacion.estado.cart;
+        if (!cliente || !cart) return;
 
         try {
-            const result = await client
+            const result = await cliente
                 .from("carrito_items")
                 .delete()
                 .eq("id_carrito", cart.id_carrito);
             if (result.error) throw result.error;
 
-            App.state.cartItems = [];
+            Aplicacion.estado.itemsCarrito = [];
             await touchCart();
             renderCart();
-            if (!settings.silent) App.showToast(App.t("cartCleared"));
+            if (!ajustes.silent) Aplicacion.showToast(Aplicacion.t("carritoVaciado"));
         } catch (error) {
             console.error("Error vaciando carrito:", error);
-            App.showToast(App.t("cartWriteError"));
+            Aplicacion.showToast(Aplicacion.t("errorEscrituraCarrito"));
         }
     }
 
     async function touchCart() {
-        const client = App.client;
-        const cart = App.state.cart;
-        if (!client || !cart) return;
+        const cliente = Aplicacion.cliente;
+        const cart = Aplicacion.estado.cart;
+        if (!cliente || !cart) return;
 
-        await client
+        await cliente
             .from("carritos")
             .update({ updated_at: new Date().toISOString() })
             .eq("id_carrito", cart.id_carrito);
     }
 
     function renderCart() {
-        const countNode = document.getElementById("cartCount");
-        const list = document.getElementById("cartList");
-        const totalNode = document.getElementById("cartTotal");
-        const title = document.getElementById("cartTitle");
-        const checkout = document.querySelector("[data-action='checkout']");
-        const clear = document.querySelector("[data-action='clear-cart']");
-        const close = document.querySelector("[data-action='close-cart'].icon-button");
-        const exchangeNode = document.getElementById("cartExchange");
-        const total = cartTotal();
-        const itemCount = App.state.cartItems.reduce(function (sum, item) {
+        const countNode = document.getElementById("contadorCarrito");
+        const list = document.getElementById("listaCarrito");
+        const totalNode = document.getElementById("totalCarrito");
+        const title = document.getElementById("tituloCarrito");
+        const finalizarCompra = document.querySelector("[data-accion='finalizarCompra']");
+        const clear = document.querySelector("[data-accion='vaciar-carrito']");
+        const close = document.querySelector("[data-accion='cerrar-carrito'].boton-icono");
+        const exchangeNode = document.getElementById("cambioCarrito");
+        const total = totalCarrito();
+        const itemCount = Aplicacion.estado.itemsCarrito.reduce(function (sum, item) {
             return sum + Number(item.cantidad || 0);
         }, 0);
 
         if (countNode) countNode.textContent = String(itemCount);
-        if (title) title.textContent = App.t("cartTitle");
-        if (checkout) checkout.textContent = App.t("checkout");
-        if (clear) clear.textContent = App.t("clearCart");
-        if (close) close.setAttribute("aria-label", App.t("closeCart"));
-        if (totalNode) totalNode.textContent = App.formatMoney(total);
+        if (title) title.textContent = Aplicacion.t("tituloCarrito");
+        if (finalizarCompra) finalizarCompra.textContent = Aplicacion.t("finalizarCompra");
+        if (clear) clear.textContent = Aplicacion.t("clearCart");
+        if (close) close.setAttribute("aria-label", Aplicacion.t("closeCart"));
+        if (totalNode) totalNode.textContent = Aplicacion.formatMoney(total);
 
         if (exchangeNode) {
-            exchangeNode.textContent = App.state.usdRate && total
-                ? `${App.t("exchangeLabel")}: ${App.formatUsd(total * App.state.usdRate)}`
+            exchangeNode.textContent = Aplicacion.estado.usdRate && total
+                ? `${Aplicacion.t("etiquetaCambio")}: ${Aplicacion.formatUsd(total * Aplicacion.estado.usdRate)}`
                 : "";
         }
 
         if (!list) return;
 
-        if (!App.state.user) {
-            list.innerHTML = `<li class="empty-state">${App.escapeHTML(App.t("cartLoginRequired"))}</li>`;
+        if (!Aplicacion.estado.user) {
+            list.innerHTML = `<li class="estado-vacio">${Aplicacion.escapeHTML(Aplicacion.t("carritoSesionRequerida"))}</li>`;
             return;
         }
 
-        if (!App.state.cartItems.length) {
-            list.innerHTML = `<li class="empty-state">${App.escapeHTML(App.t("cartEmpty"))}</li>`;
+        if (!Aplicacion.estado.itemsCarrito.length) {
+            list.innerHTML = `<li class="estado-vacio">${Aplicacion.escapeHTML(Aplicacion.t("carritoVacio"))}</li>`;
             return;
         }
 
-        list.innerHTML = App.state.cartItems.map(function (item) {
+        list.innerHTML = Aplicacion.estado.itemsCarrito.map(function (item) {
             return `
-                <li class="cart-item">
-                    <img src="${App.escapeAttribute(item.imagen_url || App.config.fallbackImage)}" alt="${App.escapeAttribute(item.nombre)}">
-                    <div>
-                        <h3>${App.escapeHTML(item.nombre)}</h3>
-                        <p>${App.escapeHTML(App.formatMoney(item.precio))} x ${Number(item.cantidad || 0)}</p>
-                        <p>${App.escapeHTML(App.formatMoney(item.subtotal))}</p>
-                    </div>
-                    <div class="cart-item__controls">
-                        <button class="qty-button" type="button" data-action="decrease" data-cart-id="${App.escapeAttribute(item.id_item)}" aria-label="-">-</button>
+                <li class="elemento-carrito">
+                    <img src="${Aplicacion.escapeAttribute(item.imagen_url || Aplicacion.config.fallbackImage)}" alt="${Aplicacion.escapeAttribute(item.nombre)}">
+                    <section>
+                        <h3>${Aplicacion.escapeHTML(item.nombre)}</h3>
+                        <p>${Aplicacion.escapeHTML(Aplicacion.formatMoney(item.precio))} x ${Number(item.cantidad || 0)}</p>
+                        <p>${Aplicacion.escapeHTML(Aplicacion.formatMoney(item.subtotal))}</p>
+                    </section>
+                    <section class="controles-elemento-carrito">
+                        <button class="boton-cantidad" type="button" data-accion="disminuir" data-id-carrito="${Aplicacion.escapeAttribute(item.id_item)}" aria-label="-">-</button>
                         <span>${Number(item.cantidad || 0)}</span>
-                        <button class="qty-button" type="button" data-action="increase" data-cart-id="${App.escapeAttribute(item.id_item)}" aria-label="+">+</button>
-                        <button class="icon-button" type="button" data-action="remove" data-cart-id="${App.escapeAttribute(item.id_item)}" aria-label="${App.escapeAttribute(App.t("remove"))}">X</button>
-                    </div>
+                        <button class="boton-cantidad" type="button" data-accion="aumentar" data-id-carrito="${Aplicacion.escapeAttribute(item.id_item)}" aria-label="+">+</button>
+                        <button class="boton-icono" type="button" data-accion="eliminar" data-id-carrito="${Aplicacion.escapeAttribute(item.id_item)}" aria-label="${Aplicacion.escapeAttribute(Aplicacion.t("eliminar"))}">X</button>
+                    </section>
                 </li>
             `;
         }).join("");
     }
 
-    function cartTotal() {
-        return App.state.cartItems.reduce(function (sum, item) {
+    function totalCarrito() {
+        return Aplicacion.estado.itemsCarrito.reduce(function (sum, item) {
             return sum + Number(item.subtotal || 0);
         }, 0);
     }
 
     function toggleCart(forceOpen) {
-        const drawer = document.getElementById("cartDrawer");
-        const overlay = document.getElementById("cartOverlay");
+        const drawer = document.getElementById("cajonCarrito");
+        const overlay = document.getElementById("superposicionCarrito");
         if (!drawer || !overlay) return;
 
-        const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !drawer.classList.contains("is-open");
-        drawer.classList.toggle("is-open", shouldOpen);
-        overlay.classList.toggle("is-open", shouldOpen);
+        const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !drawer.classList.contains("esta-abierto");
+        drawer.classList.toggle("esta-abierto", shouldOpen);
+        overlay.classList.toggle("esta-abierto", shouldOpen);
         drawer.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
-        document.body.classList.toggle("cart-open", shouldOpen);
+        document.body.classList.toggle("carrito-abierto", shouldOpen);
     }
 })();
