@@ -110,6 +110,9 @@
             adminPrecio: "Precio",
             adminInventario: "Stock",
             adminDescripcion: "Descripcion",
+            adminIdModelo: "ID modelo",
+            adminCilindrada: "Cilindrada",
+            adminIdProducto: "ID producto",
             adminGuardar: "Guardar",
             eliminarAdmin: "Eliminar",
             adminGuardado: "Registro guardado.",
@@ -286,6 +289,9 @@
             adminPrecio: "Price",
             adminInventario: "Stock",
             adminDescripcion: "Description",
+            adminIdModelo: "Motorcycle ID",
+            adminCilindrada: "Displacement",
+            adminIdProducto: "Product ID",
             adminGuardar: "Save",
             eliminarAdmin: "Delete",
             adminGuardado: "Record saved.",
@@ -396,7 +402,11 @@
         cart: null,
         itemsCarrito: [],
         orders: [],
-        usdRate: null
+        usdRate: null,
+        currency: (function () {
+            const saved = localStorage.getItem("currency");
+            return saved === "USD" || saved === "COP" ? saved : "COP";
+        }())
     };
 
     let started = false;
@@ -843,11 +853,20 @@
     }
 
     function formatMoney(value) {
+        const amount = Number(value) || 0;
+        if (estado.currency === "USD" && estado.usdRate) {
+            return new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount * estado.usdRate);
+        }
         return new Intl.NumberFormat(estado.lang === "en" ? "en-US" : "es-CO", {
             style: "currency",
             currency: "COP",
             maximumFractionDigits: 0
-        }).format(Number(value) || 0);
+        }).format(amount);
     }
 
     function formatUsd(value) {
@@ -860,12 +879,14 @@
 
     async function loadExchangeRate() {
         try {
-            const response = await fetch("https://open.er-api.com/v6/latest/COP");
+            const response = await fetch("https://v6.exchangerate-api.com/v6/5e50e0e43cf12876da3baea1/latest/COP");
             if (!response.ok) throw new Error("exchange");
             const data = await response.json();
-            estado.usdRate = Number(data && data.rates && data.rates.USD ? data.rates.USD : 0) || null;
+            if (data.result !== "success") throw new Error("exchange-result");
+            estado.usdRate = Number(data.conversion_rates && data.conversion_rates.USD ? data.conversion_rates.USD : 0) || null;
             if (Aplicacion.cart && Aplicacion.cart.render) Aplicacion.cart.render();
         } catch (error) {
+            console.warn("No se pudo obtener la tasa de cambio desde ExchangeRate-API:", error);
             estado.usdRate = null;
         }
     }

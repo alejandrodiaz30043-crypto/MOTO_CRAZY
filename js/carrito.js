@@ -380,7 +380,8 @@
         if (totalNode) totalNode.textContent = Aplicacion.formatMoney(total);
 
         if (exchangeNode) {
-            exchangeNode.textContent = Aplicacion.estado.usdRate && total
+            const currentCurrency = Aplicacion.estado.currency || "COP";
+            exchangeNode.textContent = currentCurrency === "COP" && Aplicacion.estado.usdRate && total
                 ? `${Aplicacion.t("etiquetaCambio")}: ${Aplicacion.formatUsd(total * Aplicacion.estado.usdRate)}`
                 : "";
         }

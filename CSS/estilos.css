@@ -122,7 +122,6 @@ button,
     height: auto;
     padding: 0;
     border-radius: 0;
-    color: var(--contraste-acento);
     background: transparent;
     color: var(--acento);
 }
@@ -725,12 +724,15 @@ h3 {
 
 .cotizador-cuotas__texto {
     align-self: center;
+    min-width: 0;
+    padding-right: 16px;
 }
 
 .cotizador-cuotas__texto h2 {
     margin-bottom: 10px;
     font-size: clamp(1.8rem, 3vw, 2.45rem);
     line-height: 1.08;
+    overflow-wrap: break-word;
 }
 
 .cotizador-cuotas__texto p:last-child {
@@ -803,6 +805,8 @@ h3 {
 
 .cotizador-cuotas__fila--principal {
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 2px;
     margin: 4px -6px;
     padding: 10px 6px;
     border: 1px solid color-mix(in srgb, var(--acento) 42%, var(--borde));
@@ -827,15 +831,17 @@ h3 {
     line-height: 1.2;
     text-align: right;
     overflow-wrap: anywhere;
-    white-space: nowrap;
 }
 
 .cotizador-cuotas__fila--principal span {
-    white-space: nowrap;
+    flex: 1 1 auto;
 }
 
 .cotizador-cuotas__fila--principal strong {
+    flex: 0 0 auto;
+    margin-left: auto;
     font-size: 1.1rem;
+    white-space: nowrap;
 }
 
 .cotizador-cuotas__resultado p {
@@ -1469,6 +1475,47 @@ html[data-tema="claro"] .tarjeta-producto h3 {
     color: #ff6b6b;
 }
 
+/* ── Currency selector ─────────────────────────────────────── */
+.selector-moneda {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+}
+
+.boton-moneda {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: var(--atenuado);
+    background: transparent;
+    cursor: pointer;
+    transition: color 180ms ease, background 180ms ease;
+    white-space: nowrap;
+}
+
+.boton-moneda:hover {
+    color: var(--texto);
+    background: var(--superficie-fuerte);
+}
+
+.boton-moneda--activo,
+.boton-moneda--activo:hover {
+    color: var(--contraste-acento);
+    background: var(--acento);
+}
+
+/* ── End currency selector ─────────────────────────────────── */
+
 .pie-sitio {
     display: grid;
     justify-items: center;
@@ -1546,12 +1593,28 @@ html[data-tema="claro"] .tarjeta-producto h3 {
         justify-self: center;
     }
 
-    .navegacion-sitio,
-    .acciones-encabezado {
+    .navegacion-sitio {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         width: 100%;
         gap: 8px;
+    }
+
+    .acciones-encabezado {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        width: 100%;
+        gap: 8px;
+    }
+
+    .selector-moneda {
+        padding: 2px;
+        gap: 1px;
+    }
+
+    .boton-moneda {
+        padding: 4px 5px;
+        font-size: 0.68rem;
     }
 
     .navegacion-sitio a,

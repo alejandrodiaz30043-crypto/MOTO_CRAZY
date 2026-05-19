@@ -475,13 +475,13 @@
             <article class="tarjeta-admin">
                 <h2>${Aplicacion.escapeHTML(Aplicacion.t("formularioAdminMotos"))}</h2>
                 <form data-formulario-admin data-tipo-admin="motos">
-                    <label>ID modelo<input name="id_modelo" type="number" min="1"></label>
+                    <label>${Aplicacion.escapeHTML(Aplicacion.t("adminIdModelo"))}<input name="id_modelo" type="number" min="1"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminNombre"))}<input name="nombre" required></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminIdMarca"))}<input name="id_marca" type="number" min="1" required></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminIdCategoria"))}<input name="id_categoria" type="number" min="1" required></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminImagen"))}<input name="imagen_url" type="url"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminDescripcion"))}<textarea name="descripcion"></textarea></label>
-                    <label>Cilindrada<input name="cilindrada" type="number" min="0"></label>
+                    <label>${Aplicacion.escapeHTML(Aplicacion.t("adminCilindrada"))}<input name="cilindrada" type="number" min="0"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("etiquetaMotor"))}<input name="motor"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("etiquetaPotencia"))}<input name="potencia"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminPrecio"))}<input name="precio" type="number" min="0" step="0.01"></label>
@@ -493,7 +493,7 @@
             <article class="tarjeta-admin">
                 <h2>${Aplicacion.escapeHTML(Aplicacion.t("formularioAdminAccesorios"))}</h2>
                 <form data-formulario-admin data-tipo-admin="accesorios">
-                    <label>ID producto<input name="id_producto" type="number" min="1"></label>
+                    <label>${Aplicacion.escapeHTML(Aplicacion.t("adminIdProducto"))}<input name="id_producto" type="number" min="1"></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminNombre"))}<input name="nombre" required></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminIdCategoria"))}<input name="id_categoria_accesorio" type="number" min="1" required></label>
                     <label>${Aplicacion.escapeHTML(Aplicacion.t("adminImagen"))}<input name="imagen_url" type="url"></label>
