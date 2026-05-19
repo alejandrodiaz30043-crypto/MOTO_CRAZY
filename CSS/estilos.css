@@ -1601,6 +1601,7 @@ html[data-tema="claro"] .tarjeta-producto h3 {
     }
 
     .acciones-encabezado {
+        position: relative;
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
         width: 100%;
@@ -1632,16 +1633,23 @@ html[data-tema="claro"] .tarjeta-producto h3 {
     }
 
     .contenedor-menu-usuario {
+        position: static;
         justify-content: center;
     }
 
     .desplegable-usuario {
-        right: auto;
+        position: absolute;
+        top: calc(100% + 8px);
         left: 50%;
-        transform: translate(-50%, 8px);
+        right: auto;
+        width: min(300px, calc(100vw - 28px));
+        max-height: calc(100vh - 160px);
+        overflow-y: auto;
+        transform: translateX(calc(-50% + 12px));
     }
 
     .desplegable-usuario::before {
+        display: block;
         right: auto;
         left: 50%;
         transform: translateX(-50%);
@@ -1649,7 +1657,7 @@ html[data-tema="claro"] .tarjeta-producto h3 {
 
     .contenedor-menu-usuario:hover .desplegable-usuario,
     .contenedor-menu-usuario:focus-within .desplegable-usuario {
-        transform: translate(-50%, 0);
+        transform: translateX(-50%);
     }
 
     .boton-carrito {
