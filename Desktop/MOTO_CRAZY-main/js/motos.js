@@ -923,6 +923,7 @@ function updateInstallmentQuote() {
 
             <span>
                 ${Aplicacion.escapeHTML(
+               
                     Aplicacion.t("precioBaseTexto")
                 )}
             </span>
