@@ -489,6 +489,7 @@
         applyLanguage();
         updateActiveNav();
         updateControlLabels();
+        onLanguageChange(renderFeaturedProducts);
         bindShellEvents();
         loadWeather();
         loadExchangeRate();

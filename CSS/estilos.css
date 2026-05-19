@@ -1475,7 +1475,6 @@ html[data-tema="claro"] .tarjeta-producto h3 {
     color: #ff6b6b;
 }
 
-/* ── Currency selector ─────────────────────────────────────── */
 .selector-moneda {
     display: inline-flex;
     align-items: center;
@@ -1514,7 +1513,7 @@ html[data-tema="claro"] .tarjeta-producto h3 {
     background: var(--acento);
 }
 
-/* ── End currency selector ─────────────────────────────────── */
+
 
 .pie-sitio {
     display: grid;
