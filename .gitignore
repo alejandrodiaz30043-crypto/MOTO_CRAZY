@@ -3,3 +3,4 @@ qodo/
 sixth/
 venv/
 .vscode/
+__pycache__/

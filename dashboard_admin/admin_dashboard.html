@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Panel Administrativo de MotoCrazy MC</title>
+ <link rel="stylesheet" href="assets/css/dashboard.css">
+</head>
+<body>
+ <div class="contenedor">
+ <header class="encabezado-dashboard">
+  <div>
+   <h1>Panel Administrativo de MotoCrazy MC</h1>
+   <p class="nota-reporte">Fecha del reporte: <span data-fecha-reporte></span></p>
+  </div>
+  <button class="boton-imprimir" type="button" data-accion="imprimir-dashboard">Imprimir</button>
+ </header>
+ <hr>
+
+ <div class="metricas">
+  <div class="metrica"><strong>$437.140.000</strong>Ingresos totales</div>
+  <div class="metrica"><strong>96</strong>Unidades vendidas</div>
+  <div class="metrica"><strong>60</strong>Transacciones analizadas</div>
+ </div>
+
+ <h2>1. Analisis Visual de Tendencias</h2>
+ <p>El siguiente grafico muestra el comportamiento de los ingresos a lo largo de los meses analizados:</p>
+ <img src="grafico_ventas.png" alt="Grafico de Ventas" width="700">
+
+ <h2>2. Ingresos por Categoria</h2>
+ <p>Este grafico permite identificar que categorias generan mas ingresos para la tienda:</p>
+ <img src="graficos/ingresos_por_categoria.png" alt="Grafico de Ingresos por Categoria" width="700">
+
+ <h2>3. Top 3 Productos Estrella</h2>
+ <p>Estos son los productos que mas ingresos han generado para la compania:</p>
+ <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>nombre</th>
+      <th>Total_Ingreso</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Kawasaki Ninja 400</td>
+      <td>$135.600.000</td>
+    </tr>
+    <tr>
+      <td>Yamaha MT-03</td>
+      <td>$73.500.000</td>
+    </tr>
+    <tr>
+      <td>BMW G 310 GS</td>
+      <td>$64.400.000</td>
+    </tr>
+  </tbody>
+</table>
+
+ <br><br>
+ <p class="nota-reporte"><i>Reporte generado automaticamente por Python, Pandas, Matplotlib y Seaborn.</i></p>
+ </div>
+ <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
